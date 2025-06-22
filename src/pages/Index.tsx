@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
@@ -97,22 +98,22 @@ const Index = () => {
         </div>
         
         <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-1">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-2 rounded-lg overflow-hidden">
             <TabsTrigger 
               value="calendar" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black"
+              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black transition-all duration-200"
             >
               Workout Calendar
             </TabsTrigger>
             <TabsTrigger 
               value="analytics" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-emerald-500 data-[state=active]:text-black"
+              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-emerald-500 data-[state=active]:text-black transition-all duration-200"
             >
               Analytics
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-lime-500 data-[state=active]:text-black"
+              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-lime-500 data-[state=active]:text-black transition-all duration-200"
             >
               Reports
             </TabsTrigger>
