@@ -145,52 +145,52 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="min-h-[48px] border-lime-300 hover:bg-lime-50 touch-manipulation"
+          className="min-h-[56px] px-6 border-lime-300 hover:bg-lime-50 touch-manipulation text-base font-medium"
         >
-          <Upload className="h-4 w-4 mr-2" />
+          <Upload className="h-5 w-5 mr-2" />
           Data
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-sm mx-4 bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-200">
-        <DialogHeader>
-          <DialogTitle className="text-center text-lg font-bold bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent">
+      <DialogContent className="w-[95vw] max-w-md mx-auto bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-200 max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent">
             Manage Data
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-3">
-          <div className="bg-white/70 p-3 rounded-lg border border-lime-100">
-            <h3 className="font-semibold text-green-800 mb-1 text-sm">Export Data</h3>
-            <p className="text-xs text-gray-600 mb-2">
+        <div className="space-y-6">
+          <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
+            <h3 className="font-semibold text-green-800 mb-2 text-base">Export Data</h3>
+            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
               Download or share your workout data for backup or sharing.
             </p>
-            <div className="flex gap-2">
+            <div className="space-y-3">
               <Button 
                 onClick={exportData}
-                className="flex-1 min-h-[40px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation text-xs"
+                className="w-full min-h-[52px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation text-base shadow-md"
                 disabled={workouts.length === 0}
               >
-                <Download className="h-3 w-3 mr-1" />
+                <Download className="h-5 w-5 mr-2" />
                 Backup Locally
               </Button>
               <Button 
                 onClick={shareData}
                 variant="outline"
-                className="flex-1 min-h-[40px] border-green-300 hover:bg-green-50 touch-manipulation text-xs"
+                className="w-full min-h-[52px] border-2 border-green-300 hover:bg-green-50 touch-manipulation text-base font-medium"
                 disabled={workouts.length === 0}
               >
-                <Share2 className="h-3 w-3 mr-1" />
-                Share
+                <Share2 className="h-5 w-5 mr-2" />
+                Share Data
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-3 text-center">
               {workouts.length} workouts available
             </p>
           </div>
           
-          <div className="bg-white/70 p-3 rounded-lg border border-lime-100">
-            <h3 className="font-semibold text-green-800 mb-1 text-sm">Import Data</h3>
-            <p className="text-xs text-gray-600 mb-2">
+          <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
+            <h3 className="font-semibold text-green-800 mb-2 text-base">Import Data</h3>
+            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
               Import workout data from a previously exported JSON file.
             </p>
             <Label htmlFor="file-upload" className="cursor-pointer">
@@ -199,7 +199,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 type="file"
                 accept=".json"
                 onChange={handleFileUpload}
-                className="min-h-[40px] border-lime-200 focus:border-lime-400 touch-manipulation"
+                className="min-h-[52px] border-2 border-lime-200 focus:border-lime-400 touch-manipulation text-base file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-lime-50 file:text-lime-700 hover:file:bg-lime-100"
               />
             </Label>
           </div>
