@@ -88,37 +88,37 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex flex-col safe-area-inset">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-4 flex flex-col">
-        <div className="flex justify-end mb-2">
+      <main className="flex-1 container mx-auto px-3 py-3 flex flex-col overflow-hidden">
+        <div className="flex justify-end mb-3">
           <DataManager workouts={workouts} onImportData={handleImportData} />
         </div>
         
-        <Tabs defaultValue="calendar" className="flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-3 mb-4 bg-white/90 border-2 border-lime-300 p-2 rounded-lg h-12 flex-shrink-0">
+        <Tabs defaultValue="calendar" className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="grid w-full grid-cols-3 mb-3 bg-white/90 border-2 border-lime-300 p-1.5 rounded-lg h-14 flex-shrink-0">
             <TabsTrigger 
               value="calendar" 
-              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black transition-all duration-200"
+              className="text-base font-semibold rounded-md mx-0.5 min-h-[48px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black transition-all duration-200 touch-manipulation"
             >
               Calendar
             </TabsTrigger>
             <TabsTrigger 
               value="analytics" 
-              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-emerald-500 data-[state=active]:text-black transition-all duration-200"
+              className="text-base font-semibold rounded-md mx-0.5 min-h-[48px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-emerald-500 data-[state=active]:text-black transition-all duration-200 touch-manipulation"
             >
               Analytics
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
-              className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-lime-500 data-[state=active]:text-black transition-all duration-200"
+              className="text-base font-semibold rounded-md mx-0.5 min-h-[48px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-lime-500 data-[state=active]:text-black transition-all duration-200 touch-manipulation"
             >
               Reports
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="calendar" className="flex-1">
+          <TabsContent value="calendar" className="flex-1 overflow-hidden">
             <WorkoutCalendar 
               workouts={workouts} 
               onAddWorkout={addWorkout}
@@ -127,16 +127,12 @@ const Index = () => {
             />
           </TabsContent>
 
-          <TabsContent value="analytics" className="flex-1">
-            <div className="h-full overflow-y-auto">
-              <Analytics workouts={workouts} />
-            </div>
+          <TabsContent value="analytics" className="flex-1 overflow-y-auto">
+            <Analytics workouts={workouts} />
           </TabsContent>
 
-          <TabsContent value="reports" className="flex-1">
-            <div className="h-full overflow-y-auto">
-              <Reports workouts={workouts} />
-            </div>
+          <TabsContent value="reports" className="flex-1 overflow-y-auto">
+            <Reports workouts={workouts} />
           </TabsContent>
         </Tabs>
       </main>

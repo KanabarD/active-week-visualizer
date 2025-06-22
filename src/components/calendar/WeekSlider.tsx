@@ -17,15 +17,14 @@ export function WeekSlider({ currentDate, onWeekChange }: WeekSliderProps) {
   };
 
   return (
-    <Card className="bg-white shadow-lg border-0">
-      <CardContent className="py-3">
+    <Card className="bg-white shadow-md border-0">
+      <CardContent className="py-2 px-4">
         <div className="space-y-2">
           <div className="text-center">
             <h3 className="text-sm font-semibold text-gray-800 mb-1">Navigate to Any Week</h3>
-            <p className="text-xs text-gray-600">Drag the slider to jump to any week of the year</p>
           </div>
           
-          <div className="px-4">
+          <div className="px-2">
             <Slider
               value={[currentWeekNumber]}
               onValueChange={handleWeekChange}

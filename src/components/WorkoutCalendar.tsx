@@ -105,7 +105,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-y-auto">
+    <div className="h-full flex flex-col space-y-3 overflow-hidden">
       <div className="flex-shrink-0">
         <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
       </div>
@@ -114,22 +114,24 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
         <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
       </div>
 
-      {/* Calendar Grid - Allow natural height with scrolling */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-7 gap-4">
-        {days.map((day, index) => {
-          const dayWorkouts = getWorkoutsForDate(day);
+      {/* Calendar Grid - Optimized for Samsung A53 portrait mode */}
+      <div className="flex-1 overflow-y-auto px-1">
+        <div className="grid grid-cols-1 gap-3 pb-4">
+          {days.map((day, index) => {
+            const dayWorkouts = getWorkoutsForDate(day);
 
-          return (
-            <DayCard
-              key={index}
-              day={day}
-              workouts={dayWorkouts}
-              onAddWorkout={handleAddWorkout}
-              onEditWorkout={handleEditWorkout}
-              onDeleteWorkout={onDeleteWorkout}
-            />
-          );
-        })}
+            return (
+              <DayCard
+                key={index}
+                day={day}
+                workouts={dayWorkouts}
+                onAddWorkout={handleAddWorkout}
+                onEditWorkout={handleEditWorkout}
+                onDeleteWorkout={onDeleteWorkout}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <WorkoutForm
