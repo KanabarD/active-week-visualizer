@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import { format, startOfWeek, startOfMonth, startOfYear, endOfWeek, endOfMonth, endOfYear, isWithinInterval } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,20 @@ interface ReportsProps {
 }
 
 export function Reports({ workouts }: ReportsProps) {
+  const formatDuration = (minutes: number) => {
+    if (minutes === 0) return "0m";
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    
+    if (hours === 0) {
+      return `${remainingMinutes}m`;
+    } else if (remainingMinutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${remainingMinutes}m`;
+    }
+  };
+
   const reports = useMemo(() => {
     const now = new Date();
     
@@ -87,11 +100,11 @@ export function Reports({ workouts }: ReportsProps) {
             <div className="text-sm text-gray-600">Workouts</div>
           </div>
           <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-700">{report.totalDuration}m</div>
+            <div className="text-2xl font-bold text-gray-700">{formatDuration(report.totalDuration)}</div>
             <div className="text-sm text-gray-600">Total Time</div>
           </div>
           <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-700">{report.averageDuration}m</div>
+            <div className="text-2xl font-bold text-gray-700">{formatDuration(report.averageDuration)}</div>
             <div className="text-sm text-gray-600">Avg Duration</div>
           </div>
         </div>
@@ -104,7 +117,7 @@ export function Reports({ workouts }: ReportsProps) {
                 <div key={activity} className="flex justify-between items-center p-2 bg-white rounded border border-gray-200">
                   <span className="font-medium text-gray-700">{activity}</span>
                   <div className="text-sm text-gray-600">
-                    {stats.count} sessions • {stats.duration}m
+                    {stats.count} sessions • {formatDuration(stats.duration)}
                   </div>
                 </div>
               ))}
