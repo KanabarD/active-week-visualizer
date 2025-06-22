@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload, FileText, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 interface DataManagerProps {
   workouts: WorkoutEntry[];
@@ -12,8 +13,10 @@ interface DataManagerProps {
 
 export function DataManager({ workouts, onImportData }: DataManagerProps) {
   const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const exportToCSV = () => {
+  const exportToCSV = async () => {
+    setIsExporting(true);
     try {
       // Create CSV header
       const headers = [
@@ -50,23 +53,66 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
       });
 
       const csvContent = csvRows.join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `workout-data-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast.success(`Exported ${workouts.length} workouts to CSV`);
+      const fileName = `workout-data-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+
+      // Check if we're running on a mobile device with Capacitor
+      if (typeof window !== 'undefined' && 'Capacitor' in window) {
+        try {
+          // Use Capacitor Filesystem for mobile devices
+          const result = await Filesystem.writeFile({
+            path: fileName,
+            data: csvContent,
+            directory: Directory.Documents,
+            encoding: Encoding.UTF8
+          });
+
+          toast.success(`CSV saved to Documents folder: ${fileName}`);
+          console.log('File saved:', result.uri);
+        } catch (error) {
+          console.error('Capacitor Filesystem error:', error);
+          // Fallback to Downloads directory
+          try {
+            const result = await Filesystem.writeFile({
+              path: fileName,
+              data: csvContent,
+              directory: Directory.External,
+              encoding: Encoding.UTF8
+            });
+
+            toast.success(`CSV saved to Downloads folder: ${fileName}`);
+            console.log('File saved to Downloads:', result.uri);
+          } catch (downloadError) {
+            console.error('Downloads directory error:', downloadError);
+            // Final fallback to browser download
+            downloadCSVInBrowser(csvContent, fileName);
+          }
+        }
+      } else {
+        // Use browser download for web
+        downloadCSVInBrowser(csvContent, fileName);
       }
     } catch (error) {
       console.error('Error exporting CSV:', error);
       toast.error('Failed to export CSV file');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const downloadCSVInBrowser = (csvContent: string, fileName: string) => {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success(`Exported ${workouts.length} workouts to CSV`);
     }
   };
 
@@ -234,14 +280,17 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           </div>
           <p className="text-sm text-gray-600">
             Download all your workout data as a CSV file for backup or analysis.
+            {typeof window !== 'undefined' && 'Capacitor' in window && (
+              <span className="block mt-1 text-blue-600">📱 Will save to device file system on mobile</span>
+            )}
           </p>
           <Button
             onClick={exportToCSV}
-            disabled={workouts.length === 0}
+            disabled={workouts.length === 0 || isExporting}
             className="w-full bg-green-500 hover:bg-green-600 text-white"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export CSV ({workouts.length} workouts)
+            {isExporting ? 'Exporting...' : `Export CSV (${workouts.length} workouts)`}
           </Button>
         </div>
 
@@ -299,6 +348,9 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div>• Total workouts: {workouts.length}</div>
           <div>• Data stored in: Browser localStorage</div>
           <div>• Last updated: {workouts.length > 0 ? format(new Date(workouts[workouts.length - 1].date), 'MMM d, yyyy') : 'Never'}</div>
+          {typeof window !== 'undefined' && 'Capacitor' in window && (
+            <div>• Platform: Mobile (Capacitor)</div>
+          )}
         </div>
       </div>
     </div>
