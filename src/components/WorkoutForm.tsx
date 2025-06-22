@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Copy, Edit3, ChevronLeft, ChevronRight } from "lucide-react";
@@ -36,13 +35,13 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
     }
   }, [editWorkout]);
 
-  // Memoize sorted workouts for better performance
+  // Memoize sorted workouts for better performance - limited to last 5 workouts
   const getSortedWorkouts = () => {
     if (workouts.length === 0) return [];
     
     return [...workouts]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10); // Limit to last 10 workouts
+      .slice(0, 5); // Limited to last 5 workouts
   };
 
   const sortedWorkouts = getSortedWorkouts();

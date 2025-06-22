@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
 import { Reports } from "@/components/Reports";
 import { Header } from "@/components/Header";
+import { DataManager } from "@/components/DataManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export interface WorkoutEntry {
@@ -83,11 +83,19 @@ const Index = () => {
     setWorkouts(prev => prev.filter(w => w.id !== id));
   };
 
+  const handleImportData = (importedWorkouts: WorkoutEntry[]) => {
+    setWorkouts(importedWorkouts);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
+        <div className="flex justify-end mb-4">
+          <DataManager workouts={workouts} onImportData={handleImportData} />
+        </div>
+        
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-1">
             <TabsTrigger 
