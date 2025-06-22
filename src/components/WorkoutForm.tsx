@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Copy, Edit3, ChevronLeft, ChevronRight } from "lucide-react";
@@ -232,10 +233,10 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
 
           {activity === 'Resistance' && (
             <div className="bg-lime-50 p-4 rounded-lg border border-lime-200">
-              <Label htmlFor="exerciseType" className="text-sm font-semibold text-green-800">Exercise Type</Label>
+              <Label htmlFor="exerciseType" className="text-sm font-semibold text-green-800">PPL Split</Label>
               <Select value={exerciseType} onValueChange={(value) => setExerciseType(value as WorkoutEntry['exerciseType'])}>
                 <SelectTrigger className="mt-1 border-lime-200 focus:border-lime-400">
-                  <SelectValue placeholder="Select exercise type" />
+                  <SelectValue placeholder="Select PPL split" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-lime-200">
                   <SelectItem value="Push">Push</SelectItem>
