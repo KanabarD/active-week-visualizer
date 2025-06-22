@@ -23,12 +23,17 @@ export function Analytics({ workouts }: AnalyticsProps) {
   const analyticsData = useMemo(() => {
     // Weekly activity distribution
     const weeklyData = workouts.reduce((acc, workout) => {
-      const activity = workout.activity;
-      acc[activity] = (acc[activity] || 0) + workout.duration;
+      const activityName = workout.activity === 'Other' && workout.customActivityName 
+        ? workout.customActivityName 
+        : workout.activity;
+      acc[activityName] = (acc[activityName] || 0) + workout.duration;
       
       // Add secondary activity if it exists
       if (workout.secondaryActivity) {
-        acc[workout.secondaryActivity] = (acc[workout.secondaryActivity] || 0) + (workout.duration * 0.3); // Give secondary activity 30% of the time
+        const secondaryName = workout.secondaryActivity === 'Other' && workout.customSecondaryActivityName
+          ? workout.customSecondaryActivityName
+          : workout.secondaryActivity;
+        acc[secondaryName] = (acc[secondaryName] || 0) + (workout.duration * 0.3); // Give secondary activity 30% of the time
       }
       
       return acc;
@@ -37,7 +42,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
     const weeklyChartData = Object.entries(weeklyData).map(([activity, duration]) => ({
       activity,
       duration: Math.round(duration),
-      fill: activityColors[activity as keyof typeof activityColors],
+      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
     }));
 
     // Pie chart data
@@ -46,7 +51,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
       name: activity,
       value: Math.round(duration),
       percentage: ((duration / totalDuration) * 100).toFixed(1),
-      fill: activityColors[activity as keyof typeof activityColors],
+      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
     }));
 
     // Summary stats

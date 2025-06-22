@@ -101,7 +101,9 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   const formatWorkoutDisplay = (workout: WorkoutEntry) => {
-    let displayText = workout.activity;
+    let displayText = workout.activity === 'Other' && workout.customActivityName 
+      ? workout.customActivityName 
+      : workout.activity;
     
     // Add exercise type for primary resistance training
     if (workout.exerciseType) {
@@ -110,7 +112,10 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
     
     // Add secondary activity if it exists
     if (workout.secondaryActivity) {
-      displayText += ` + ${workout.secondaryActivity}`;
+      const secondaryName = workout.secondaryActivity === 'Other' && workout.customSecondaryActivityName
+        ? workout.customSecondaryActivityName
+        : workout.secondaryActivity;
+      displayText += ` + ${secondaryName}`;
       
       // Add PPL Split for secondary resistance training
       if (workout.pplSplit) {
