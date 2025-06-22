@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -14,7 +15,7 @@ interface WorkoutCalendarProps {
 }
 
 const activityColors = {
-  BJJ: "bg-purple-500",
+  "Brazilian Jiu-Jitsu": "bg-purple-500",
   Cycling: "bg-cyan-500",
   Hiking: "bg-lime-500",
   Kickboxing: "bg-red-500",
@@ -142,6 +143,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
                     >
                       <span className="truncate">
                         {workout.activity}
+                        {workout.secondaryActivity && ` + ${workout.secondaryActivity}`}
                         {workout.exerciseType && ` - ${workout.exerciseType}`}
                       </span>
                       <div className="flex items-center gap-1">

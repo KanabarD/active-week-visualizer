@@ -20,6 +20,7 @@ interface WorkoutFormProps {
 
 export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
+  const [secondaryActivity, setSecondaryActivity] = useState<WorkoutEntry['secondaryActivity'] | ''>('');
   const [duration, setDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [notes, setNotes] = useState('');
@@ -38,6 +39,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
     const recentWorkout = getMostRecentWorkout();
     if (recentWorkout) {
       setActivity(recentWorkout.activity);
+      setSecondaryActivity(recentWorkout.secondaryActivity || '');
       setDuration(recentWorkout.duration.toString());
       setExerciseType(recentWorkout.exerciseType || '');
       setNotes(recentWorkout.notes || '');
@@ -49,12 +51,14 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
     if (activity && duration) {
       onSubmit({
         activity: activity as WorkoutEntry['activity'],
+        secondaryActivity: secondaryActivity ? secondaryActivity as WorkoutEntry['secondaryActivity'] : undefined,
         duration: parseInt(duration),
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         notes: notes || undefined,
       });
       // Reset form
       setActivity('');
+      setSecondaryActivity('');
       setDuration('');
       setExerciseType('');
       setNotes('');
@@ -64,6 +68,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
   const handleClose = () => {
     // Reset form on close
     setActivity('');
+    setSecondaryActivity('');
     setDuration('');
     setExerciseType('');
     setNotes('');
@@ -99,7 +104,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="activity">Activity</Label>
+            <Label htmlFor="activity">Primary Activity</Label>
             <Select value={activity} onValueChange={(value) => {
               setActivity(value as WorkoutEntry['activity']);
               if (value !== 'Resistance') {
@@ -107,10 +112,30 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
               }
             }}>
               <SelectTrigger>
-                <SelectValue placeholder="Select activity" />
+                <SelectValue placeholder="Select primary activity" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="BJJ">BJJ</SelectItem>
+                <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
+                <SelectItem value="Cycling">Cycling</SelectItem>
+                <SelectItem value="Hiking">Hiking</SelectItem>
+                <SelectItem value="Kickboxing">Kickboxing</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="Resistance">Resistance Training</SelectItem>
+                <SelectItem value="Running">Running</SelectItem>
+                <SelectItem value="Swimming">Swimming</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="secondaryActivity">Secondary Activity (optional)</Label>
+            <Select value={secondaryActivity} onValueChange={(value) => setSecondaryActivity(value as WorkoutEntry['secondaryActivity'])}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select secondary activity (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">None</SelectItem>
+                <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
                 <SelectItem value="Cycling">Cycling</SelectItem>
                 <SelectItem value="Hiking">Hiking</SelectItem>
                 <SelectItem value="Kickboxing">Kickboxing</SelectItem>

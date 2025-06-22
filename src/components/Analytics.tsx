@@ -9,13 +9,14 @@ interface AnalyticsProps {
 }
 
 const activityColors = {
-  BJJ: "#8b5cf6",
+  "Brazilian Jiu-Jitsu": "#8b5cf6",
   Cycling: "#06b6d4",
   Hiking: "#84cc16",
   Kickboxing: "#ef4444",
   Resistance: "#f97316",
   Running: "#22c55e",
   Swimming: "#3b82f6",
+  Other: "#6b7280",
 };
 
 export function Analytics({ workouts }: AnalyticsProps) {
@@ -24,12 +25,18 @@ export function Analytics({ workouts }: AnalyticsProps) {
     const weeklyData = workouts.reduce((acc, workout) => {
       const activity = workout.activity;
       acc[activity] = (acc[activity] || 0) + workout.duration;
+      
+      // Add secondary activity if it exists
+      if (workout.secondaryActivity) {
+        acc[workout.secondaryActivity] = (acc[workout.secondaryActivity] || 0) + (workout.duration * 0.3); // Give secondary activity 30% of the time
+      }
+      
       return acc;
     }, {} as Record<string, number>);
 
     const weeklyChartData = Object.entries(weeklyData).map(([activity, duration]) => ({
       activity,
-      duration,
+      duration: Math.round(duration),
       fill: activityColors[activity as keyof typeof activityColors],
     }));
 
@@ -37,16 +44,17 @@ export function Analytics({ workouts }: AnalyticsProps) {
     const totalDuration = Object.values(weeklyData).reduce((sum, duration) => sum + duration, 0);
     const pieData = Object.entries(weeklyData).map(([activity, duration]) => ({
       name: activity,
-      value: duration,
+      value: Math.round(duration),
       percentage: ((duration / totalDuration) * 100).toFixed(1),
       fill: activityColors[activity as keyof typeof activityColors],
     }));
 
     // Summary stats
     const totalWorkouts = workouts.length;
-    const averageDuration = totalWorkouts > 0 ? Math.round(totalDuration / totalWorkouts) : 0;
+    const actualTotalDuration = workouts.reduce((sum, workout) => sum + workout.duration, 0);
+    const averageDuration = totalWorkouts > 0 ? Math.round(actualTotalDuration / totalWorkouts) : 0;
     const mostActiveActivity = Object.entries(weeklyData).reduce(
-      (max, [activity, duration]) => duration > max.duration ? { activity, duration } : max,
+      (max, [activity, duration]) => duration > max.duration ? { activity, duration: Math.round(duration) } : max,
       { activity: 'None', duration: 0 }
     );
 
@@ -54,7 +62,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
       weeklyChartData,
       pieData,
       totalWorkouts,
-      totalDuration,
+      totalDuration: actualTotalDuration,
       averageDuration,
       mostActiveActivity,
     };
