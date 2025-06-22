@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { addMonths, subMonths } from "date-fns";
+import { addMonths, subMonths, addWeeks, subWeeks } from "date-fns";
 import { WorkoutForm } from "./WorkoutForm";
 import { WorkoutEntry } from "@/pages/Index";
 import { MonthlyCalendar } from "./calendar/MonthlyCalendar";
@@ -74,10 +75,20 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   const navigateTime = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setCurrentDate(subMonths(currentDate, 1));
+    if (viewMode === 'calendar') {
+      // Monthly navigation for calendar view
+      if (direction === 'prev') {
+        setCurrentDate(subMonths(currentDate, 1));
+      } else {
+        setCurrentDate(addMonths(currentDate, 1));
+      }
     } else {
-      setCurrentDate(addMonths(currentDate, 1));
+      // Weekly navigation for list view
+      if (direction === 'prev') {
+        setCurrentDate(subWeeks(currentDate, 1));
+      } else {
+        setCurrentDate(addWeeks(currentDate, 1));
+      }
     }
   };
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { 
   format, 
@@ -5,15 +6,14 @@ import {
   isToday, 
   isYesterday, 
   isThisWeek, 
-  isThisMonth,
-  startOfMonth,
-  endOfMonth,
+  startOfWeek,
+  endOfWeek,
   eachDayOfInterval,
-  addMonths,
-  subMonths
+  addWeeks,
+  subWeeks
 } from "date-fns";
 import { WorkoutEntry } from "@/pages/Index";
-import { ChevronLeft, ChevronRight, Plus, Calendar, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -73,17 +73,23 @@ export function ListView({
     return format(date, 'MMM d, yyyy');
   };
 
-  const getCalendarDays = () => {
-    const monthStart = startOfMonth(currentDate);
-    const monthEnd = endOfMonth(currentDate);
-    return eachDayOfInterval({ start: monthStart, end: monthEnd });
+  const getWeekDays = () => {
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
+    return eachDayOfInterval({ start: weekStart, end: weekEnd });
   };
 
-  const days = getCalendarDays();
+  const getWeekDateRange = () => {
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
+    return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+  };
+
+  const days = getWeekDays();
 
   return (
     <div className="h-full flex flex-col space-y-3 overflow-hidden">
-      {/* Month Navigation */}
+      {/* Week Navigation */}
       <div className="flex items-center justify-between bg-white/90 rounded-lg p-3 border-2 border-lime-300">
         <Button
           variant="ghost"
@@ -96,8 +102,11 @@ export function ListView({
         
         <div className="text-center">
           <h2 className="text-lg font-bold text-gray-800">
-            {format(currentDate, 'MMMM yyyy')}
+            Weekly View
           </h2>
+          <div className="text-sm text-gray-600">
+            {getWeekDateRange()}
+          </div>
         </div>
         
         <Button
@@ -251,4 +260,4 @@ export function ListView({
       </div>
     </div>
   );
-} 
+}
