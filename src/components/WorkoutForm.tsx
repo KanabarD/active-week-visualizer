@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Copy, Edit3 } from "lucide-react";
+import { Copy, Edit3, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +27,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
   const [pplSplit, setPplSplit] = useState<WorkoutEntry['pplSplit'] | ''>('');
   const [customActivityName, setCustomActivityName] = useState('');
   const [customSecondaryActivityName, setCustomSecondaryActivityName] = useState('');
+  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState(0);
 
   // Load edit workout data when editWorkout changes
   useEffect(() => {
@@ -43,31 +43,31 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
     }
   }, [editWorkout]);
 
-  const getMostRecentWorkout = () => {
-    if (workouts.length === 0) return null;
+  const getSortedWorkouts = () => {
+    if (workouts.length === 0) return [];
     
-    const sortedWorkouts = [...workouts].sort((a, b) => 
+    return [...workouts].sort((a, b) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-    
-    return sortedWorkouts[0];
   };
 
-  const copyPreviousWorkout = () => {
-    const recentWorkout = getMostRecentWorkout();
-    if (recentWorkout) {
-      setActivity(recentWorkout.activity);
-      setSecondaryActivity(recentWorkout.secondaryActivity || '');
-      setDuration(recentWorkout.duration.toString());
-      setSecondaryDuration(recentWorkout.secondaryDuration ? recentWorkout.secondaryDuration.toString() : '');
-      setExerciseType(recentWorkout.exerciseType || '');
-      setPplSplit(recentWorkout.pplSplit || '');
-      setCustomActivityName(recentWorkout.customActivityName || '');
-      setCustomSecondaryActivityName(recentWorkout.customSecondaryActivityName || '');
+  const sortedWorkouts = getSortedWorkouts();
+  const selectedWorkout = sortedWorkouts[selectedWorkoutIndex];
+
+  const copySelectedWorkout = () => {
+    if (selectedWorkout) {
+      setActivity(selectedWorkout.activity);
+      setSecondaryActivity(selectedWorkout.secondaryActivity || '');
+      setDuration(selectedWorkout.duration.toString());
+      setSecondaryDuration(selectedWorkout.secondaryDuration ? selectedWorkout.secondaryDuration.toString() : '');
+      setExerciseType(selectedWorkout.exerciseType || '');
+      setPplSplit(selectedWorkout.pplSplit || '');
+      setCustomActivityName(selectedWorkout.customActivityName || '');
+      setCustomSecondaryActivityName(selectedWorkout.customSecondaryActivityName || '');
     }
   };
 
-  const formatPreviousWorkoutDisplay = (workout: WorkoutEntry) => {
+  const formatWorkoutDisplay = (workout: WorkoutEntry) => {
     let displayText = workout.activity === 'Other' && workout.customActivityName 
       ? workout.customActivityName 
       : workout.activity;
@@ -80,6 +80,14 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
     }
     
     return displayText;
+  };
+
+  const navigateWorkout = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && selectedWorkoutIndex < sortedWorkouts.length - 1) {
+      setSelectedWorkoutIndex(selectedWorkoutIndex + 1);
+    } else if (direction === 'next' && selectedWorkoutIndex > 0) {
+      setSelectedWorkoutIndex(selectedWorkoutIndex - 1);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -125,7 +133,6 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
 
   if (!date && !editWorkout) return null;
 
-  const mostRecentWorkout = getMostRecentWorkout();
   const isEditing = !!editWorkout;
 
   return (
@@ -144,16 +151,49 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
           </DialogTitle>
         </DialogHeader>
         
-        {!isEditing && mostRecentWorkout && (
-          <div className="mb-4">
+        {!isEditing && sortedWorkouts.length > 0 && (
+          <div className="mb-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => navigateWorkout('prev')}
+                disabled={selectedWorkoutIndex >= sortedWorkouts.length - 1}
+                className="px-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex-1 text-center text-sm text-gray-600">
+                {selectedWorkout ? formatWorkoutDisplay(selectedWorkout) : 'No workouts'}
+                <div className="text-xs text-gray-400">
+                  {selectedWorkout && format(new Date(selectedWorkout.date), 'MMM d')} 
+                  {sortedWorkouts.length > 1 && ` (${selectedWorkoutIndex + 1} of ${sortedWorkouts.length})`}
+                </div>
+              </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => navigateWorkout('next')}
+                disabled={selectedWorkoutIndex <= 0}
+                className="px-2"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            
             <Button
               type="button"
               variant="outline"
-              onClick={copyPreviousWorkout}
+              onClick={copySelectedWorkout}
               className="w-full bg-gradient-to-r from-green-50 to-blue-50 border-green-200 hover:bg-gradient-to-r hover:from-green-100 hover:to-blue-100"
+              disabled={!selectedWorkout}
             >
               <Copy className="h-4 w-4 mr-2" />
-              Copy Previous Workout ({formatPreviousWorkoutDisplay(mostRecentWorkout)})
+              Copy This Workout
             </Button>
           </div>
         )}
