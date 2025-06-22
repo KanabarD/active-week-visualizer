@@ -19,6 +19,7 @@ const activityColors = {
   Cycling: "bg-cyan-500",
   Hiking: "bg-lime-500",
   Kickboxing: "bg-red-500",
+  Other: "bg-gray-500",
   Resistance: "bg-orange-500",
   Running: "bg-green-500",
   Swimming: "bg-blue-500",
@@ -61,6 +62,11 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
       setShowForm(false);
       setSelectedDate(null);
     }
+  };
+
+  const handleFormClose = () => {
+    setShowForm(false);
+    setSelectedDate(null);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -170,16 +176,12 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
         })}
       </div>
 
-      {showForm && selectedDate && (
-        <WorkoutForm
-          date={selectedDate}
-          onSubmit={handleFormSubmit}
-          onCancel={() => {
-            setShowForm(false);
-            setSelectedDate(null);
-          }}
-        />
-      )}
+      <WorkoutForm
+        date={selectedDate}
+        isOpen={showForm}
+        onSubmit={handleFormSubmit}
+        onClose={handleFormClose}
+      />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
@@ -9,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export interface WorkoutEntry {
   id: string;
   date: string;
-  activity: 'BJJ' | 'Cycling' | 'Hiking' | 'Kickboxing' | 'Resistance' | 'Running' | 'Swimming';
+  activity: 'BJJ' | 'Cycling' | 'Hiking' | 'Kickboxing' | 'Other' | 'Resistance' | 'Running' | 'Swimming';
   duration: number; // in minutes
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
   notes?: string;

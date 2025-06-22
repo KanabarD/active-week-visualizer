@@ -1,21 +1,22 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WorkoutEntry } from "@/pages/Index";
 
 interface WorkoutFormProps {
-  date: Date;
+  date: Date | null;
+  isOpen: boolean;
   onSubmit: (workout: Omit<WorkoutEntry, 'id' | 'date'>) => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
-export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
+export function WorkoutForm({ date, isOpen, onSubmit, onClose }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
   const [duration, setDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
@@ -30,17 +31,34 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         notes: notes || undefined,
       });
+      // Reset form
+      setActivity('');
+      setDuration('');
+      setExerciseType('');
+      setNotes('');
     }
   };
 
+  const handleClose = () => {
+    // Reset form on close
+    setActivity('');
+    setDuration('');
+    setExerciseType('');
+    setNotes('');
+    onClose();
+  };
+
+  if (!date) return null;
+
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center">
-          Add Workout for {format(date, 'EEEE, MMMM d')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-center">
+            Add Workout for {format(date, 'EEEE, MMMM d')}
+          </DialogTitle>
+        </DialogHeader>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="activity">Activity</Label>
@@ -58,6 +76,7 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
                 <SelectItem value="Cycling">Cycling</SelectItem>
                 <SelectItem value="Hiking">Hiking</SelectItem>
                 <SelectItem value="Kickboxing">Kickboxing</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
                 <SelectItem value="Resistance">Resistance Training</SelectItem>
                 <SelectItem value="Running">Running</SelectItem>
                 <SelectItem value="Swimming">Swimming</SelectItem>
@@ -108,12 +127,12 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
             <Button type="submit" className="flex-1" disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType)}>
               Add Workout
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
