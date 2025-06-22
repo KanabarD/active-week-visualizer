@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { startOfWeek, addDays, isSameDay, startOfYear, addWeeks, subWeeks, getWeek } from "date-fns";
 import { WorkoutForm } from "./WorkoutForm";
@@ -104,7 +105,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   return (
-    <div className="h-full flex flex-col space-y-2 overflow-hidden">
+    <div className="h-full flex flex-col space-y-4 overflow-y-auto">
       <div className="flex-shrink-0">
         <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
       </div>
@@ -113,8 +114,8 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
         <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
       </div>
 
-      {/* Calendar Grid - Fixed height to fit remaining space */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-7 gap-2 min-h-0 overflow-hidden">
+      {/* Calendar Grid - Allow natural height with scrolling */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-7 gap-4">
         {days.map((day, index) => {
           const dayWorkouts = getWorkoutsForDate(day);
 

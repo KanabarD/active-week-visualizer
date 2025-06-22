@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
@@ -89,16 +88,16 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex flex-col">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-4 overflow-hidden flex flex-col">
+      <main className="flex-1 container mx-auto px-4 py-4 flex flex-col">
         <div className="flex justify-end mb-2">
           <DataManager workouts={workouts} onImportData={handleImportData} />
         </div>
         
-        <Tabs defaultValue="calendar" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="grid w-full grid-cols-3 mb-4 bg-white/90 border-2 border-lime-300 p-2 rounded-lg overflow-hidden h-12 flex-shrink-0">
+        <Tabs defaultValue="calendar" className="flex-1 flex flex-col">
+          <TabsList className="grid w-full grid-cols-3 mb-4 bg-white/90 border-2 border-lime-300 p-2 rounded-lg h-12 flex-shrink-0">
             <TabsTrigger 
               value="calendar" 
               className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black transition-all duration-200"
@@ -119,7 +118,7 @@ const Index = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="calendar" className="flex-1 overflow-hidden">
+          <TabsContent value="calendar" className="flex-1">
             <WorkoutCalendar 
               workouts={workouts} 
               onAddWorkout={addWorkout}
@@ -128,13 +127,13 @@ const Index = () => {
             />
           </TabsContent>
 
-          <TabsContent value="analytics" className="flex-1 overflow-hidden">
+          <TabsContent value="analytics" className="flex-1">
             <div className="h-full overflow-y-auto">
               <Analytics workouts={workouts} />
             </div>
           </TabsContent>
 
-          <TabsContent value="reports" className="flex-1 overflow-hidden">
+          <TabsContent value="reports" className="flex-1">
             <div className="h-full overflow-y-auto">
               <Reports workouts={workouts} />
             </div>
