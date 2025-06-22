@@ -3,12 +3,14 @@ import { format, startOfWeek, startOfMonth, startOfYear, endOfWeek, endOfMonth, 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WorkoutEntry } from "@/pages/Index";
+import { DataManager } from "./DataManager";
 
 interface ReportsProps {
   workouts: WorkoutEntry[];
+  onImportData: (workouts: WorkoutEntry[]) => void;
 }
 
-export function Reports({ workouts }: ReportsProps) {
+export function Reports({ workouts, onImportData }: ReportsProps) {
   const formatDuration = (minutes: number) => {
     if (minutes === 0) return "0m";
     const hours = Math.floor(minutes / 60);
@@ -133,6 +135,9 @@ export function Reports({ workouts }: ReportsProps) {
       <ReportCard title="Weekly Report" report={reports.weekly} />
       <ReportCard title="Monthly Report" report={reports.monthly} />
       <ReportCard title="Yearly Report" report={reports.yearly} />
+      
+      {/* Data Management Section */}
+      <DataManager workouts={workouts} onImportData={onImportData} />
     </div>
   );
 }

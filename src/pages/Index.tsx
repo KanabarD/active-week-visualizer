@@ -232,7 +232,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="reports" className="flex-1 overflow-y-auto">
-            <Reports workouts={workouts} />
+            <Reports workouts={workouts} onImportData={handleImportData} />
           </TabsContent>
         </Tabs>
       </main>
