@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Download, Upload } from "lucide-react";
+import { Download, Upload, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -34,6 +33,65 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
       title: "Data Exported",
       description: "Your workout data has been downloaded successfully.",
     });
+  };
+
+  const shareData = async () => {
+    const dataStr = JSON.stringify(workouts, null, 2);
+    
+    if (navigator.share) {
+      try {
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const file = new File([dataBlob], `workout-data-${new Date().toISOString().split('T')[0]}.json`, { type: 'application/json' });
+        
+        await navigator.share({
+          title: 'My Workout Data',
+          text: 'Here is my workout tracking data',
+          files: [file]
+        });
+        
+        toast({
+          title: "Data Shared",
+          description: "Your workout data has been shared successfully.",
+        });
+      } catch (error) {
+        // If sharing files fails, fall back to sharing text
+        if (navigator.canShare && navigator.canShare({ text: dataStr })) {
+          try {
+            await navigator.share({
+              title: 'My Workout Data',
+              text: dataStr
+            });
+            
+            toast({
+              title: "Data Shared",
+              description: "Your workout data has been shared as text.",
+            });
+          } catch (textError) {
+            copyToClipboard(dataStr);
+          }
+        } else {
+          copyToClipboard(dataStr);
+        }
+      }
+    } else {
+      copyToClipboard(dataStr);
+    }
+  };
+
+  const copyToClipboard = async (data: string) => {
+    try {
+      await navigator.clipboard.writeText(data);
+      toast({
+        title: "Data Copied",
+        description: "Your workout data has been copied to clipboard.",
+      });
+    } catch (error) {
+      toast({
+        title: "Share Failed",
+        description: "Unable to share data. Please try the download option instead.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,16 +162,30 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div className="bg-white/70 p-4 rounded-lg border border-lime-100">
             <h3 className="font-semibold text-green-800 mb-2">Export Data</h3>
             <p className="text-sm text-gray-600 mb-3">
-              Download your workout data as a JSON file for backup.
+              Download or share your workout data for backup or sharing.
             </p>
-            <Button 
-              onClick={exportData}
-              className="w-full min-h-[48px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation"
-              disabled={workouts.length === 0}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export Data ({workouts.length} workouts)
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={exportData}
+                className="flex-1 min-h-[48px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation"
+                disabled={workouts.length === 0}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+              <Button 
+                onClick={shareData}
+                variant="outline"
+                className="flex-1 min-h-[48px] border-green-300 hover:bg-green-50 touch-manipulation"
+                disabled={workouts.length === 0}
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {workouts.length} workouts available
+            </p>
           </div>
           
           <div className="bg-white/70 p-4 rounded-lg border border-lime-100">
