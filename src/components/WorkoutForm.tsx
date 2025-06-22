@@ -24,7 +24,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
   const [duration, setDuration] = useState('');
   const [secondaryDuration, setSecondaryDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
-  const [secondaryExerciseType, setSecondaryExerciseType] = useState<WorkoutEntry['secondaryExerciseType'] | ''>('');
+  const [pplSplit, setPplSplit] = useState<WorkoutEntry['pplSplit'] | ''>('');
   const [notes, setNotes] = useState('');
 
   const getMostRecentWorkout = () => {
@@ -45,7 +45,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setDuration(recentWorkout.duration.toString());
       setSecondaryDuration(recentWorkout.secondaryDuration ? recentWorkout.secondaryDuration.toString() : '');
       setExerciseType(recentWorkout.exerciseType || '');
-      setSecondaryExerciseType(recentWorkout.secondaryExerciseType || '');
+      setPplSplit(recentWorkout.pplSplit || '');
       setNotes(recentWorkout.notes || '');
     }
   };
@@ -59,7 +59,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
         duration: parseInt(duration),
         secondaryDuration: secondaryActivity && secondaryDuration ? parseInt(secondaryDuration) : undefined,
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
-        secondaryExerciseType: secondaryActivity === 'Resistance' && secondaryExerciseType ? secondaryExerciseType as WorkoutEntry['secondaryExerciseType'] : undefined,
+        pplSplit: secondaryActivity === 'Resistance' && pplSplit ? pplSplit as WorkoutEntry['pplSplit'] : undefined,
         notes: notes || undefined,
       });
       // Reset form
@@ -68,7 +68,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setDuration('');
       setSecondaryDuration('');
       setExerciseType('');
-      setSecondaryExerciseType('');
+      setPplSplit('');
       setNotes('');
     }
   };
@@ -80,7 +80,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
     setDuration('');
     setSecondaryDuration('');
     setExerciseType('');
-    setSecondaryExerciseType('');
+    setPplSplit('');
     setNotes('');
     onClose();
   };
@@ -91,9 +91,9 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
         <DialogHeader>
-          <DialogTitle className="text-center">
+          <DialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Add Workout for {format(date, 'EEEE, MMMM d')}
           </DialogTitle>
         </DialogHeader>
@@ -104,7 +104,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
               type="button"
               variant="outline"
               onClick={copyPreviousWorkout}
-              className="w-full"
+              className="w-full bg-gradient-to-r from-green-50 to-blue-50 border-green-200 hover:bg-gradient-to-r hover:from-green-100 hover:to-blue-100"
             >
               <Copy className="h-4 w-4 mr-2" />
               Copy Previous Workout ({mostRecentWorkout.activity})
@@ -113,18 +113,18 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
         )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="activity">Primary Activity</Label>
+          <div className="bg-white/70 p-4 rounded-lg border border-blue-100">
+            <Label htmlFor="activity" className="text-sm font-semibold text-blue-800">Primary Activity</Label>
             <Select value={activity} onValueChange={(value) => {
               setActivity(value as WorkoutEntry['activity']);
               if (value !== 'Resistance') {
                 setExerciseType('');
               }
             }}>
-              <SelectTrigger>
+              <SelectTrigger className="mt-1 border-blue-200 focus:border-blue-400">
                 <SelectValue placeholder="Select primary activity" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border border-blue-200">
                 <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
                 <SelectItem value="Cycling">Cycling</SelectItem>
                 <SelectItem value="Hiking">Hiking</SelectItem>
@@ -137,8 +137,8 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="duration">Primary Duration (minutes)</Label>
+          <div className="bg-white/70 p-4 rounded-lg border border-blue-100">
+            <Label htmlFor="duration" className="text-sm font-semibold text-blue-800">Primary Duration (minutes)</Label>
             <Input
               id="duration"
               type="number"
@@ -146,17 +146,18 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
               onChange={(e) => setDuration(e.target.value)}
               placeholder="60"
               min="1"
+              className="mt-1 border-blue-200 focus:border-blue-400"
             />
           </div>
 
           {activity === 'Resistance' && (
-            <div>
-              <Label htmlFor="exerciseType">Primary Exercise Type</Label>
+            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+              <Label htmlFor="exerciseType" className="text-sm font-semibold text-orange-800">Primary Exercise Type</Label>
               <Select value={exerciseType} onValueChange={(value) => setExerciseType(value as WorkoutEntry['exerciseType'])}>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 border-orange-200 focus:border-orange-400">
                   <SelectValue placeholder="Select exercise type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-orange-200">
                   <SelectItem value="Push">Push</SelectItem>
                   <SelectItem value="Pull">Pull</SelectItem>
                   <SelectItem value="Legs">Legs</SelectItem>
@@ -165,18 +166,18 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
             </div>
           )}
 
-          <div>
-            <Label htmlFor="secondaryActivity">Secondary Activity (optional)</Label>
+          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+            <Label htmlFor="secondaryActivity" className="text-sm font-semibold text-green-800">Secondary Activity (optional)</Label>
             <Select value={secondaryActivity} onValueChange={(value) => {
               setSecondaryActivity(value as WorkoutEntry['secondaryActivity']);
               if (value !== 'Resistance') {
-                setSecondaryExerciseType('');
+                setPplSplit('');
               }
             }}>
-              <SelectTrigger>
+              <SelectTrigger className="mt-1 border-green-200 focus:border-green-400">
                 <SelectValue placeholder="Select secondary activity (optional)" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border border-green-200">
                 <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
                 <SelectItem value="Cycling">Cycling</SelectItem>
                 <SelectItem value="Hiking">Hiking</SelectItem>
@@ -195,9 +196,9 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
                 onClick={() => {
                   setSecondaryActivity('');
                   setSecondaryDuration('');
-                  setSecondaryExerciseType('');
+                  setPplSplit('');
                 }}
-                className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+                className="mt-2 text-xs text-green-600 hover:text-green-800 hover:bg-green-100"
               >
                 Clear secondary activity
               </Button>
@@ -205,8 +206,8 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
           </div>
 
           {secondaryActivity && (
-            <div>
-              <Label htmlFor="secondaryDuration">Secondary Duration (minutes)</Label>
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <Label htmlFor="secondaryDuration" className="text-sm font-semibold text-green-800">Secondary Duration (minutes)</Label>
               <Input
                 id="secondaryDuration"
                 type="number"
@@ -214,18 +215,19 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
                 onChange={(e) => setSecondaryDuration(e.target.value)}
                 placeholder="30"
                 min="1"
+                className="mt-1 border-green-200 focus:border-green-400"
               />
             </div>
           )}
 
           {secondaryActivity === 'Resistance' && (
-            <div>
-              <Label htmlFor="secondaryExerciseType">Secondary Exercise Type</Label>
-              <Select value={secondaryExerciseType} onValueChange={(value) => setSecondaryExerciseType(value as WorkoutEntry['secondaryExerciseType'])}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select secondary exercise type" />
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <Label htmlFor="pplSplit" className="text-sm font-semibold text-purple-800">PPL Split</Label>
+              <Select value={pplSplit} onValueChange={(value) => setPplSplit(value as WorkoutEntry['pplSplit'])}>
+                <SelectTrigger className="mt-1 border-purple-200 focus:border-purple-400">
+                  <SelectValue placeholder="Select PPL split" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-purple-200">
                   <SelectItem value="Push">Push</SelectItem>
                   <SelectItem value="Pull">Pull</SelectItem>
                   <SelectItem value="Legs">Legs</SelectItem>
@@ -234,22 +236,27 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
             </div>
           )}
 
-          <div>
-            <Label htmlFor="notes">Notes (optional)</Label>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <Label htmlFor="notes" className="text-sm font-semibold text-gray-800">Notes (optional)</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any notes about your workout..."
               rows={3}
+              className="mt-1 border-gray-200 focus:border-gray-400"
             />
           </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" className="flex-1" disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType) || (secondaryActivity && !secondaryDuration) || (secondaryActivity === 'Resistance' && !secondaryExerciseType)}>
+          <div className="flex gap-2 pt-2">
+            <Button 
+              type="submit" 
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold" 
+              disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType) || (secondaryActivity && !secondaryDuration) || (secondaryActivity === 'Resistance' && !pplSplit)}
+            >
               Add Workout
             </Button>
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button type="button" variant="outline" onClick={handleClose} className="border-gray-300 hover:bg-gray-50">
               Cancel
             </Button>
           </div>

@@ -14,7 +14,7 @@ export interface WorkoutEntry {
   duration: number; // in minutes
   secondaryDuration?: number; // in minutes for secondary activity
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
-  secondaryExerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for secondary Resistance training
+  pplSplit?: 'Push' | 'Pull' | 'Legs'; // Only for secondary Resistance training
   notes?: string;
 }
 
@@ -34,19 +34,28 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="calendar" className="text-sm font-medium">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/80 border-2 border-blue-200 p-1">
+            <TabsTrigger 
+              value="calendar" 
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+            >
               Workout Calendar
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="text-sm font-medium">
+            <TabsTrigger 
+              value="analytics" 
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-blue-500 data-[state=active]:text-white"
+            >
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="reports" className="text-sm font-medium">
+            <TabsTrigger 
+              value="reports" 
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+            >
               Reports
             </TabsTrigger>
           </TabsList>
