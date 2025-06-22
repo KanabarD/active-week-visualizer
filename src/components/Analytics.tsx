@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -158,7 +157,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     fontSize: '12px'
                   }}
                   formatter={(value, name, props) => [
-                    props.payload?.durationFormatted || formatDuration(Number(value)),
+                    formatDuration(Number(value)),
                     props.payload?.fullActivity || name
                   ]}
                 />
@@ -205,7 +204,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     fontSize: '12px'
                   }}
                   formatter={(value, name) => [
-                    `${analyticsData.pieData.find(d => d.name === name)?.valueFormatted || formatDuration(Number(value))} (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
+                    `${formatDuration(Number(value))} (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
                     name
                   ]}
                 />
