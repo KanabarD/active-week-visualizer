@@ -1,0 +1,24 @@
+
+{
+  "name": "Active Week Visualizer",
+  "short_name": "Workout Tracker",
+  "description": "Track and visualize your weekly workouts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#84cc16",
+  "icons": [
+    {
+      "src": "/lovable-uploads/3a2503d6-04f4-48d7-8012-9e4b973e870b.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/lovable-uploads/3a2503d6-04f4-48d7-8012-9e4b973e870b.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["health", "fitness", "productivity"],
+  "orientation": "portrait-primary"
+}

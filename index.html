@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>active-week-visualizer</title>
-    <meta name="description" content="Lovable Generated Project" />
+    <meta name="description" content="Track and visualize your weekly workouts offline" />
     <meta name="author" content="Lovable" />
 
     <meta property="og:title" content="active-week-visualizer" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:description" content="Track and visualize your weekly workouts offline" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -18,10 +18,33 @@
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
     <link rel="icon" href="/lovable-uploads/3a2503d6-04f4-48d7-8012-9e4b973e870b.png" type="image/png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#84cc16">
+    
+    <!-- PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Tracker">
+    <link rel="apple-touch-icon" href="/lovable-uploads/3a2503d6-04f4-48d7-8012-9e4b973e870b.png">
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
