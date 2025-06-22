@@ -22,6 +22,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
   const [secondaryActivity, setSecondaryActivity] = useState<WorkoutEntry['secondaryActivity'] | ''>('');
   const [duration, setDuration] = useState('');
+  const [secondaryDuration, setSecondaryDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [notes, setNotes] = useState('');
 
@@ -41,6 +42,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setActivity(recentWorkout.activity);
       setSecondaryActivity(recentWorkout.secondaryActivity || '');
       setDuration(recentWorkout.duration.toString());
+      setSecondaryDuration(recentWorkout.secondaryDuration ? recentWorkout.secondaryDuration.toString() : '');
       setExerciseType(recentWorkout.exerciseType || '');
       setNotes(recentWorkout.notes || '');
     }
@@ -53,6 +55,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
         activity: activity as WorkoutEntry['activity'],
         secondaryActivity: secondaryActivity ? secondaryActivity as WorkoutEntry['secondaryActivity'] : undefined,
         duration: parseInt(duration),
+        secondaryDuration: secondaryActivity && secondaryDuration ? parseInt(secondaryDuration) : undefined,
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         notes: notes || undefined,
       });
@@ -60,6 +63,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setActivity('');
       setSecondaryActivity('');
       setDuration('');
+      setSecondaryDuration('');
       setExerciseType('');
       setNotes('');
     }
@@ -70,6 +74,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
     setActivity('');
     setSecondaryActivity('');
     setDuration('');
+    setSecondaryDuration('');
     setExerciseType('');
     setNotes('');
     onClose();
@@ -128,6 +133,18 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
           </div>
 
           <div>
+            <Label htmlFor="duration">Primary Duration (minutes)</Label>
+            <Input
+              id="duration"
+              type="number"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              placeholder="60"
+              min="1"
+            />
+          </div>
+
+          <div>
             <Label htmlFor="secondaryActivity">Secondary Activity (optional)</Label>
             <Select value={secondaryActivity} onValueChange={(value) => setSecondaryActivity(value as WorkoutEntry['secondaryActivity'])}>
               <SelectTrigger>
@@ -149,13 +166,30 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setSecondaryActivity('')}
+                onClick={() => {
+                  setSecondaryActivity('');
+                  setSecondaryDuration('');
+                }}
                 className="mt-1 text-xs text-muted-foreground hover:text-foreground"
               >
                 Clear secondary activity
               </Button>
             )}
           </div>
+
+          {secondaryActivity && (
+            <div>
+              <Label htmlFor="secondaryDuration">Secondary Duration (minutes)</Label>
+              <Input
+                id="secondaryDuration"
+                type="number"
+                value={secondaryDuration}
+                onChange={(e) => setSecondaryDuration(e.target.value)}
+                placeholder="30"
+                min="1"
+              />
+            </div>
+          )}
 
           {activity === 'Resistance' && (
             <div>
@@ -174,18 +208,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
           )}
 
           <div>
-            <Label htmlFor="duration">Duration (minutes)</Label>
-            <Input
-              id="duration"
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="60"
-              min="1"
-            />
-          </div>
-
-          <div>
             <Label htmlFor="notes">Notes (optional)</Label>
             <Textarea
               id="notes"
@@ -197,7 +219,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" className="flex-1" disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType)}>
+            <Button type="submit" className="flex-1" disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType) || (secondaryActivity && !secondaryDuration)}>
               Add Workout
             </Button>
             <Button type="button" variant="outline" onClick={handleClose}>
