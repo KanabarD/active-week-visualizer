@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload, FileText, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 interface DataManagerProps {
   workouts: WorkoutEntry[];
@@ -40,42 +39,8 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
       const jsonContent = JSON.stringify(exportData, null, 2);
       const fileName = `workout-data-${format(new Date(), 'yyyy-MM-dd')}.json`;
 
-      // Check if we're running on a mobile device with Capacitor
-      if (typeof window !== 'undefined' && 'Capacitor' in window) {
-        try {
-          // Use Capacitor Filesystem for mobile devices
-          const result = await Filesystem.writeFile({
-            path: fileName,
-            data: jsonContent,
-            directory: Directory.Documents,
-            encoding: Encoding.UTF8
-          });
-
-          toast.success(`JSON saved to Documents folder: ${fileName}`);
-          console.log('File saved:', result.uri);
-        } catch (error) {
-          console.error('Capacitor Filesystem error:', error);
-          // Fallback to External directory
-          try {
-            const result = await Filesystem.writeFile({
-              path: fileName,
-              data: jsonContent,
-              directory: Directory.External,
-              encoding: Encoding.UTF8
-            });
-
-            toast.success(`JSON saved to External storage: ${fileName}`);
-            console.log('File saved to External:', result.uri);
-          } catch (downloadError) {
-            console.error('External directory error:', downloadError);
-            // Final fallback to browser download
-            downloadJSONInBrowser(jsonContent, fileName);
-          }
-        }
-      } else {
-        // Use browser download for web
-        downloadJSONInBrowser(jsonContent, fileName);
-      }
+      // Use browser download
+      downloadJSONInBrowser(jsonContent, fileName);
     } catch (error) {
       console.error('Error exporting JSON:', error);
       toast.error('Failed to export JSON file');
@@ -341,9 +306,6 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           </div>
           <p className="text-sm text-gray-600">
             Download all your workout data as a JSON file for backup or analysis.
-            {typeof window !== 'undefined' && 'Capacitor' in window && (
-              <span className="block mt-1 text-blue-600">📱 Will save to device file system on mobile</span>
-            )}
           </p>
           <Button
             onClick={exportToCSV}
@@ -409,9 +371,6 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div>• Total workouts: {workouts.length}</div>
           <div>• Data stored in: Browser localStorage</div>
           <div>• Last updated: {workouts.length > 0 ? format(new Date(workouts[workouts.length - 1].date), 'MMM d, yyyy') : 'Never'}</div>
-          {typeof window !== 'undefined' && 'Capacitor' in window && (
-            <div>• Platform: Mobile (Capacitor)</div>
-          )}
         </div>
       </div>
     </div>
