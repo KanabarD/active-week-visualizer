@@ -219,15 +219,17 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                 ))}
                 
                 {isCurrentMonth && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full h-8 text-xs border-2 border-dashed border-blue-300 hover:border-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 bg-white/80"
-                    onClick={() => handleAddWorkout(day)}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Workout
-                  </Button>
+                  <div className="border-2 border-dashed border-blue-300 rounded-lg p-1 bg-blue-50/30">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="w-full h-8 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-100/50 transition-all duration-200 font-medium"
+                      onClick={() => handleAddWorkout(day)}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Workout
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
