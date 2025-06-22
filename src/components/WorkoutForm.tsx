@@ -134,7 +134,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
                 <SelectValue placeholder="Select secondary activity (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
                 <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
                 <SelectItem value="Cycling">Cycling</SelectItem>
                 <SelectItem value="Hiking">Hiking</SelectItem>
@@ -145,6 +144,17 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
                 <SelectItem value="Swimming">Swimming</SelectItem>
               </SelectContent>
             </Select>
+            {secondaryActivity && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setSecondaryActivity('')}
+                className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Clear secondary activity
+              </Button>
+            )}
           </div>
 
           {activity === 'Resistance' && (
