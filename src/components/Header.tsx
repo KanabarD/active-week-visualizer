@@ -11,7 +11,7 @@ export function Header() {
           </div>
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Activity Tracker
+              Workout Tracker
             </h1>
             <p className="text-sm text-gray-600">Track your fitness journey</p>
           </div>
