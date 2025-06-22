@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, startOfDay, addWeeks, subWeeks } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3, Calendar, CalendarDays } from "lucide-react";
@@ -128,22 +129,9 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
       ? workout.customActivityName 
       : workout.activity;
     
-    // Add exercise type for primary resistance training
+    // Add exercise type for resistance training
     if (workout.exerciseType) {
       displayText += ` - ${workout.exerciseType}`;
-    }
-    
-    // Add secondary activity if it exists
-    if (workout.secondaryActivity) {
-      const secondaryName = workout.secondaryActivity === 'Other' && workout.customSecondaryActivityName
-        ? workout.customSecondaryActivityName
-        : workout.secondaryActivity;
-      displayText += ` + ${secondaryName}`;
-      
-      // Add PPL Split for secondary resistance training
-      if (workout.pplSplit) {
-        displayText += ` - ${workout.pplSplit}`;
-      }
     }
     
     return displayText;
@@ -212,7 +200,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
 
       {/* Calendar Grid */}
       <div className={`grid gap-1 sm:gap-3 ${viewMode === 'weekly' ? 'grid-cols-1' : 'grid-cols-7'}`}>
-        {/* Day Headers */}
+        {/* Day Headers for monthly view */}
         {viewMode === 'monthly' && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayName) => (
           <div key={dayName} className="p-1 sm:p-3 text-center text-xs sm:text-sm font-bold text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg">
             {dayName}
@@ -228,7 +216,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
           return (
             <Card 
               key={index} 
-              className={`${viewMode === 'weekly' ? 'min-h-[120px] sm:min-h-[140px]' : 'min-h-[100px] sm:min-h-[140px]'} transition-all duration-200 hover:shadow-xl hover:scale-105 ${
+              className={`${viewMode === 'weekly' ? 'min-h-[120px] sm:min-h-[140px]' : 'min-h-[80px] sm:min-h-[100px]'} transition-all duration-200 hover:shadow-xl hover:scale-105 ${
                 isToday ? 'ring-2 sm:ring-3 ring-blue-400 bg-gradient-to-br from-blue-50 to-purple-50' : 
                 isCurrentMonth ? 'bg-gradient-to-br from-white to-gray-50' : 'bg-gray-100'
               } ${!isCurrentMonth ? 'opacity-60' : ''} border-1 sm:border-2 ${isToday ? 'border-blue-300' : 'border-gray-200'}`}

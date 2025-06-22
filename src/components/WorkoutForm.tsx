@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Copy, Edit3, ChevronLeft, ChevronRight } from "lucide-react";
@@ -20,26 +21,18 @@ interface WorkoutFormProps {
 
 export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onUpdate, onClose }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
-  const [secondaryActivity, setSecondaryActivity] = useState<WorkoutEntry['secondaryActivity'] | ''>('');
   const [duration, setDuration] = useState('');
-  const [secondaryDuration, setSecondaryDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
-  const [pplSplit, setPplSplit] = useState<WorkoutEntry['pplSplit'] | ''>('');
   const [customActivityName, setCustomActivityName] = useState('');
-  const [customSecondaryActivityName, setCustomSecondaryActivityName] = useState('');
   const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState(0);
 
   // Load edit workout data when editWorkout changes
   useEffect(() => {
     if (editWorkout) {
       setActivity(editWorkout.activity);
-      setSecondaryActivity(editWorkout.secondaryActivity || '');
       setDuration(editWorkout.duration.toString());
-      setSecondaryDuration(editWorkout.secondaryDuration ? editWorkout.secondaryDuration.toString() : '');
       setExerciseType(editWorkout.exerciseType || '');
-      setPplSplit(editWorkout.pplSplit || '');
       setCustomActivityName(editWorkout.customActivityName || '');
-      setCustomSecondaryActivityName(editWorkout.customSecondaryActivityName || '');
     }
   }, [editWorkout]);
 
@@ -57,13 +50,9 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
   const copySelectedWorkout = () => {
     if (selectedWorkout) {
       setActivity(selectedWorkout.activity);
-      setSecondaryActivity(selectedWorkout.secondaryActivity || '');
       setDuration(selectedWorkout.duration.toString());
-      setSecondaryDuration(selectedWorkout.secondaryDuration ? selectedWorkout.secondaryDuration.toString() : '');
       setExerciseType(selectedWorkout.exerciseType || '');
-      setPplSplit(selectedWorkout.pplSplit || '');
       setCustomActivityName(selectedWorkout.customActivityName || '');
-      setCustomSecondaryActivityName(selectedWorkout.customSecondaryActivityName || '');
     }
   };
 
@@ -72,11 +61,9 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
       ? workout.customActivityName 
       : workout.activity;
     
-    if (workout.secondaryActivity) {
-      const secondaryName = workout.secondaryActivity === 'Other' && workout.customSecondaryActivityName
-        ? workout.customSecondaryActivityName
-        : workout.secondaryActivity;
-      displayText += ` + ${secondaryName}`;
+    // Add exercise type for resistance training
+    if (workout.exerciseType) {
+      displayText += ` - ${workout.exerciseType}`;
     }
     
     return displayText;
@@ -95,13 +82,9 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
     if (activity && duration) {
       const workoutData = {
         activity: activity as WorkoutEntry['activity'],
-        secondaryActivity: secondaryActivity ? secondaryActivity as WorkoutEntry['secondaryActivity'] : undefined,
         duration: parseInt(duration),
-        secondaryDuration: secondaryActivity && secondaryDuration ? parseInt(secondaryDuration) : undefined,
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
-        pplSplit: secondaryActivity === 'Resistance' && pplSplit ? pplSplit as WorkoutEntry['pplSplit'] : undefined,
         customActivityName: activity === 'Other' && customActivityName ? customActivityName : undefined,
-        customSecondaryActivityName: secondaryActivity === 'Other' && customSecondaryActivityName ? customSecondaryActivityName : undefined,
       };
 
       if (editWorkout) {
@@ -117,13 +100,9 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
 
   const resetForm = () => {
     setActivity('');
-    setSecondaryActivity('');
     setDuration('');
-    setSecondaryDuration('');
     setExerciseType('');
-    setPplSplit('');
     setCustomActivityName('');
-    setCustomSecondaryActivityName('');
   };
 
   const handleClose = () => {
@@ -200,7 +179,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="bg-white/70 p-4 rounded-lg border border-blue-100">
-            <Label htmlFor="activity" className="text-sm font-semibold text-blue-800">Primary Activity</Label>
+            <Label htmlFor="activity" className="text-sm font-semibold text-blue-800">Activity</Label>
             <Select value={activity} onValueChange={(value) => {
               setActivity(value as WorkoutEntry['activity']);
               if (value !== 'Resistance') {
@@ -211,7 +190,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
               }
             }}>
               <SelectTrigger className="mt-1 border-blue-200 focus:border-blue-400">
-                <SelectValue placeholder="Select primary activity" />
+                <SelectValue placeholder="Select activity" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-blue-200">
                 <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
@@ -240,7 +219,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
           </div>
 
           <div className="bg-white/70 p-4 rounded-lg border border-blue-100">
-            <Label htmlFor="duration" className="text-sm font-semibold text-blue-800">Primary Duration (minutes)</Label>
+            <Label htmlFor="duration" className="text-sm font-semibold text-blue-800">Duration (minutes)</Label>
             <Input
               id="duration"
               type="number"
@@ -254,100 +233,12 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
 
           {activity === 'Resistance' && (
             <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-              <Label htmlFor="exerciseType" className="text-sm font-semibold text-orange-800">Primary Exercise Type</Label>
+              <Label htmlFor="exerciseType" className="text-sm font-semibold text-orange-800">Exercise Type</Label>
               <Select value={exerciseType} onValueChange={(value) => setExerciseType(value as WorkoutEntry['exerciseType'])}>
                 <SelectTrigger className="mt-1 border-orange-200 focus:border-orange-400">
                   <SelectValue placeholder="Select exercise type" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-orange-200">
-                  <SelectItem value="Push">Push</SelectItem>
-                  <SelectItem value="Pull">Pull</SelectItem>
-                  <SelectItem value="Legs">Legs</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <Label htmlFor="secondaryActivity" className="text-sm font-semibold text-green-800">Secondary Activity (optional)</Label>
-            <Select value={secondaryActivity} onValueChange={(value) => {
-              setSecondaryActivity(value as WorkoutEntry['secondaryActivity']);
-              if (value !== 'Resistance') {
-                setPplSplit('');
-              }
-              if (value !== 'Other') {
-                setCustomSecondaryActivityName('');
-              }
-            }}>
-              <SelectTrigger className="mt-1 border-green-200 focus:border-green-400">
-                <SelectValue placeholder="Select secondary activity (optional)" />
-              </SelectTrigger>
-              <SelectContent className="bg-white border border-green-200">
-                <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
-                <SelectItem value="Cycling">Cycling</SelectItem>
-                <SelectItem value="Hiking">Hiking</SelectItem>
-                <SelectItem value="Kickboxing">Kickboxing</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-                <SelectItem value="Resistance">Resistance Training</SelectItem>
-                <SelectItem value="Running">Running</SelectItem>
-                <SelectItem value="Swimming">Swimming</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {secondaryActivity === 'Other' && (
-              <div className="mt-2">
-                <Label htmlFor="customSecondaryActivityName" className="text-sm font-semibold text-green-800">Specify Secondary Activity</Label>
-                <Input
-                  id="customSecondaryActivityName"
-                  value={customSecondaryActivityName}
-                  onChange={(e) => setCustomSecondaryActivityName(e.target.value)}
-                  placeholder="Enter activity name"
-                  className="mt-1 border-green-200 focus:border-green-400"
-                />
-              </div>
-            )}
-            
-            {secondaryActivity && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSecondaryActivity('');
-                  setSecondaryDuration('');
-                  setPplSplit('');
-                  setCustomSecondaryActivityName('');
-                }}
-                className="mt-2 text-xs text-green-600 hover:text-green-800 hover:bg-green-100"
-              >
-                Clear secondary activity
-              </Button>
-            )}
-          </div>
-
-          {secondaryActivity && (
-            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <Label htmlFor="secondaryDuration" className="text-sm font-semibold text-green-800">Secondary Duration (minutes)</Label>
-              <Input
-                id="secondaryDuration"
-                type="number"
-                value={secondaryDuration}
-                onChange={(e) => setSecondaryDuration(e.target.value)}
-                placeholder="30"
-                min="1"
-                className="mt-1 border-green-200 focus:border-green-400"
-              />
-            </div>
-          )}
-
-          {secondaryActivity === 'Resistance' && (
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <Label htmlFor="pplSplit" className="text-sm font-semibold text-purple-800">PPL Split</Label>
-              <Select value={pplSplit} onValueChange={(value) => setPplSplit(value as WorkoutEntry['pplSplit'])}>
-                <SelectTrigger className="mt-1 border-purple-200 focus:border-purple-400">
-                  <SelectValue placeholder="Select PPL split" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-purple-200">
                   <SelectItem value="Push">Push</SelectItem>
                   <SelectItem value="Pull">Pull</SelectItem>
                   <SelectItem value="Legs">Legs</SelectItem>
@@ -363,10 +254,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
               disabled={
                 !activity || !duration || 
                 (activity === 'Resistance' && !exerciseType) || 
-                (activity === 'Other' && !customActivityName) ||
-                (secondaryActivity && !secondaryDuration) || 
-                (secondaryActivity === 'Resistance' && !pplSplit) ||
-                (secondaryActivity === 'Other' && !customSecondaryActivityName)
+                (activity === 'Other' && !customActivityName)
               }
             >
               {isEditing ? 'Update Workout' : 'Add Workout'}
