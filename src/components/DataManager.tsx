@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WorkoutEntry } from "@/pages/Index";
 import { useToast } from "@/hooks/use-toast";
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 interface DataManagerProps {
   workouts: WorkoutEntry[];
@@ -16,14 +18,43 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const exportData = () => {
+  const exportData = async () => {
     const dataStr = JSON.stringify(workouts, null, 2);
+    const fileName = `workout-data-${new Date().toISOString().split('T')[0]}.json`;
+    
+    // Try to use native filesystem first (for mobile/native apps)
+    if (Capacitor.isNativePlatform()) {
+      try {
+        console.log('📱 Using native filesystem to save backup...');
+        
+        await Filesystem.writeFile({
+          path: fileName,
+          data: dataStr,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
+        
+        console.log('✅ Successfully saved backup to device Documents folder');
+        
+        toast({
+          title: "Backup Saved",
+          description: `Your workout data has been saved to Documents/${fileName}`,
+        });
+        return;
+      } catch (error) {
+        console.error('❌ Failed to save with native filesystem:', error);
+        // Fall back to web download method
+      }
+    }
+    
+    // Fallback to web download method
+    console.log('🌐 Using web download method...');
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = `workout-data-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -162,7 +193,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
             <h3 className="font-semibold text-green-800 mb-2 text-base">Export Data</h3>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Download or share your workout data for backup or sharing.
+              Save your workout data directly to your device or download for backup.
             </p>
             <div className="space-y-3">
               <Button 
@@ -171,7 +202,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 disabled={workouts.length === 0}
               >
                 <Download className="h-5 w-5 mr-2" />
-                Backup Locally
+                Save to Device
               </Button>
               <Button 
                 onClick={shareData}
