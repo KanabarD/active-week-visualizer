@@ -11,6 +11,7 @@ export interface WorkoutEntry {
   date: string;
   activity: 'BJJ' | 'Kickboxing' | 'Swimming' | 'Running' | 'Resistance';
   duration: number; // in minutes
+  exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
   notes?: string;
 }
 

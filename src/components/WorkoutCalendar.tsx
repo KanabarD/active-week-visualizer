@@ -133,7 +133,10 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
                     <Badge 
                       className={`w-full justify-between text-white text-xs ${activityColors[workout.activity]} hover:opacity-90 transition-opacity`}
                     >
-                      <span className="truncate">{workout.activity}</span>
+                      <span className="truncate">
+                        {workout.activity}
+                        {workout.exerciseType && ` - ${workout.exerciseType}`}
+                      </span>
                       <div className="flex items-center gap-1">
                         <span>{workout.duration}m</span>
                         <Button

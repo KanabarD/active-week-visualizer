@@ -18,6 +18,7 @@ interface WorkoutFormProps {
 export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
   const [duration, setDuration] = useState('');
+  const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [notes, setNotes] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,6 +27,7 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
       onSubmit({
         activity: activity as WorkoutEntry['activity'],
         duration: parseInt(duration),
+        exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         notes: notes || undefined,
       });
     }
@@ -42,7 +44,12 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="activity">Activity</Label>
-            <Select value={activity} onValueChange={(value) => setActivity(value as WorkoutEntry['activity'])}>
+            <Select value={activity} onValueChange={(value) => {
+              setActivity(value as WorkoutEntry['activity']);
+              if (value !== 'Resistance') {
+                setExerciseType('');
+              }
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Select activity" />
               </SelectTrigger>
@@ -55,6 +62,22 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
               </SelectContent>
             </Select>
           </div>
+
+          {activity === 'Resistance' && (
+            <div>
+              <Label htmlFor="exerciseType">Exercise Type</Label>
+              <Select value={exerciseType} onValueChange={(value) => setExerciseType(value as WorkoutEntry['exerciseType'])}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select exercise type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Push">Push</SelectItem>
+                  <SelectItem value="Pull">Pull</SelectItem>
+                  <SelectItem value="Legs">Legs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div>
             <Label htmlFor="duration">Duration (minutes)</Label>
@@ -80,7 +103,7 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" className="flex-1" disabled={!activity || !duration}>
+            <Button type="submit" className="flex-1" disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType)}>
               Add Workout
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
