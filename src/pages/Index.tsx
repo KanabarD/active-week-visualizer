@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export interface WorkoutEntry {
   id: string;
   date: string;
-  activity: 'BJJ' | 'Kickboxing' | 'Swimming' | 'Running' | 'Resistance';
+  activity: 'BJJ' | 'Cycling' | 'Hiking' | 'Kickboxing' | 'Resistance' | 'Running' | 'Swimming';
   duration: number; // in minutes
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
   notes?: string;

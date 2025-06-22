@@ -10,10 +10,12 @@ interface AnalyticsProps {
 
 const activityColors = {
   BJJ: "#8b5cf6",
+  Cycling: "#06b6d4",
+  Hiking: "#84cc16",
   Kickboxing: "#ef4444",
-  Swimming: "#3b82f6",
-  Running: "#22c55e",
   Resistance: "#f97316",
+  Running: "#22c55e",
+  Swimming: "#3b82f6",
 };
 
 export function Analytics({ workouts }: AnalyticsProps) {

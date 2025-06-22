@@ -16,10 +16,12 @@ interface WorkoutCalendarProps {
 
 const activityColors = {
   BJJ: "bg-purple-500",
+  Cycling: "bg-cyan-500",
+  Hiking: "bg-lime-500",
   Kickboxing: "bg-red-500",
-  Swimming: "bg-blue-500",
-  Running: "bg-green-500",
   Resistance: "bg-orange-500",
+  Running: "bg-green-500",
+  Swimming: "bg-blue-500",
 };
 
 export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: WorkoutCalendarProps) {

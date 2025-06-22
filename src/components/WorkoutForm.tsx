@@ -55,10 +55,12 @@ export function WorkoutForm({ date, onSubmit, onCancel }: WorkoutFormProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="BJJ">BJJ</SelectItem>
+                <SelectItem value="Cycling">Cycling</SelectItem>
+                <SelectItem value="Hiking">Hiking</SelectItem>
                 <SelectItem value="Kickboxing">Kickboxing</SelectItem>
-                <SelectItem value="Swimming">Swimming</SelectItem>
-                <SelectItem value="Running">Running</SelectItem>
                 <SelectItem value="Resistance">Resistance Training</SelectItem>
+                <SelectItem value="Running">Running</SelectItem>
+                <SelectItem value="Swimming">Swimming</SelectItem>
               </SelectContent>
             </Select>
           </div>
