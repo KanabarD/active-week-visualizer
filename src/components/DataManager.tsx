@@ -18,42 +18,27 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
   const exportToCSV = async () => {
     setIsExporting(true);
     try {
-      // Create CSV header
-      const headers = [
-        'Date',
-        'Activity',
-        'Duration (minutes)',
-        'Secondary Activity',
-        'Secondary Duration (minutes)',
-        'Exercise Type',
-        'PPL Split',
-        'Custom Activity Name',
-        'Custom Secondary Activity Name',
-        'ID'
-      ];
+      // Create JSON data structure
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        version: "1.0",
+        totalWorkouts: workouts.length,
+        workouts: workouts.map(workout => ({
+          id: workout.id,
+          date: workout.date,
+          activity: workout.activity,
+          duration: workout.duration,
+          secondaryActivity: workout.secondaryActivity,
+          secondaryDuration: workout.secondaryDuration,
+          exerciseType: workout.exerciseType,
+          pplSplit: workout.pplSplit,
+          customActivityName: workout.customActivityName,
+          customSecondaryActivityName: workout.customSecondaryActivityName
+        }))
+      };
 
-      // Create CSV rows
-      const csvRows = [headers.join(',')];
-      
-      workouts.forEach(workout => {
-        const row = [
-          format(new Date(workout.date), 'yyyy-MM-dd'),
-          workout.activity,
-          workout.duration,
-          workout.secondaryActivity || '',
-          workout.secondaryDuration || '',
-          workout.exerciseType || '',
-          workout.pplSplit || '',
-          workout.customActivityName || '',
-          workout.customSecondaryActivityName || '',
-          workout.id
-        ].map(field => `"${field}"`).join(',');
-        
-        csvRows.push(row);
-      });
-
-      const csvContent = csvRows.join('\n');
-      const fileName = `workout-data-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      const jsonContent = JSON.stringify(exportData, null, 2);
+      const fileName = `workout-data-${format(new Date(), 'yyyy-MM-dd')}.json`;
 
       // Check if we're running on a mobile device with Capacitor
       if (typeof window !== 'undefined' && 'Capacitor' in window) {
@@ -61,46 +46,46 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           // Use Capacitor Filesystem for mobile devices
           const result = await Filesystem.writeFile({
             path: fileName,
-            data: csvContent,
+            data: jsonContent,
             directory: Directory.Documents,
             encoding: Encoding.UTF8
           });
 
-          toast.success(`CSV saved to Documents folder: ${fileName}`);
+          toast.success(`JSON saved to Documents folder: ${fileName}`);
           console.log('File saved:', result.uri);
         } catch (error) {
           console.error('Capacitor Filesystem error:', error);
-          // Fallback to Downloads directory
+          // Fallback to External directory
           try {
             const result = await Filesystem.writeFile({
               path: fileName,
-              data: csvContent,
+              data: jsonContent,
               directory: Directory.External,
               encoding: Encoding.UTF8
             });
 
-            toast.success(`CSV saved to Downloads folder: ${fileName}`);
-            console.log('File saved to Downloads:', result.uri);
+            toast.success(`JSON saved to External storage: ${fileName}`);
+            console.log('File saved to External:', result.uri);
           } catch (downloadError) {
-            console.error('Downloads directory error:', downloadError);
+            console.error('External directory error:', downloadError);
             // Final fallback to browser download
-            downloadCSVInBrowser(csvContent, fileName);
+            downloadJSONInBrowser(jsonContent, fileName);
           }
         }
       } else {
         // Use browser download for web
-        downloadCSVInBrowser(csvContent, fileName);
+        downloadJSONInBrowser(jsonContent, fileName);
       }
     } catch (error) {
-      console.error('Error exporting CSV:', error);
-      toast.error('Failed to export CSV file');
+      console.error('Error exporting JSON:', error);
+      toast.error('Failed to export JSON file');
     } finally {
       setIsExporting(false);
     }
   };
 
-  const downloadCSVInBrowser = (csvContent: string, fileName: string) => {
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const downloadJSONInBrowser = (jsonContent: string, fileName: string) => {
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
     const link = document.createElement('a');
     
     if (link.download !== undefined) {
@@ -112,7 +97,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
       link.click();
       document.body.removeChild(link);
       
-      toast.success(`Exported ${workouts.length} workouts to CSV`);
+      toast.success(`Exported ${workouts.length} workouts to JSON`);
     }
   };
 
@@ -125,122 +110,198 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const csvContent = e.target?.result as string;
-        const lines = csvContent.split('\n');
+        const fileContent = e.target?.result as string;
         
-        if (lines.length < 2) {
-          toast.error('CSV file is empty or invalid');
-          setIsImporting(false);
-          return;
-        }
+        // Try to parse as JSON first
+        try {
+          const jsonData = JSON.parse(fileContent);
+          
+          // Validate JSON structure
+          if (!jsonData.workouts || !Array.isArray(jsonData.workouts)) {
+            throw new Error('Invalid JSON structure: missing workouts array');
+          }
 
-        // Parse headers
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-        
-        // Expected headers
-        const expectedHeaders = [
-          'Date',
-          'Activity',
-          'Duration (minutes)',
-          'Secondary Activity',
-          'Secondary Duration (minutes)',
-          'Exercise Type',
-          'PPL Split',
-          'Custom Activity Name',
-          'Custom Secondary Activity Name',
-          'ID'
-        ];
+          const importedWorkouts: WorkoutEntry[] = [];
+          let errorCount = 0;
 
-        // Validate headers
-        if (!expectedHeaders.every(header => headers.includes(header))) {
-          toast.error('CSV file format is invalid. Please use the exported format.');
-          setIsImporting(false);
-          return;
-        }
+          // Process each workout
+          jsonData.workouts.forEach((workout: any, index: number) => {
+            try {
+              // Validate required fields
+              if (!workout.id || !workout.date || !workout.activity || !workout.duration) {
+                errorCount++;
+                return;
+              }
 
-        const importedWorkouts: WorkoutEntry[] = [];
-        let errorCount = 0;
+              // Validate activity type
+              const validActivities: WorkoutEntry['activity'][] = [
+                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Kickboxing', 
+                'Other', 'Resistance', 'Running', 'Swimming'
+              ];
+              
+              if (!validActivities.includes(workout.activity)) {
+                errorCount++;
+                return;
+              }
 
-        // Parse data rows
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
+              // Validate exercise type if present
+              const validExerciseTypes: WorkoutEntry['exerciseType'][] = ['Push', 'Pull', 'Legs'];
+              if (workout.exerciseType && !validExerciseTypes.includes(workout.exerciseType)) {
+                workout.exerciseType = undefined;
+              }
 
-          try {
-            const values = line.split(',').map(v => v.replace(/"/g, '').trim());
-            
-            if (values.length < headers.length) {
+              // Validate PPL split if present
+              const validPplSplits: WorkoutEntry['pplSplit'][] = ['Push', 'Pull', 'Legs'];
+              if (workout.pplSplit && !validPplSplits.includes(workout.pplSplit)) {
+                workout.pplSplit = undefined;
+              }
+
+              // Validate secondary activity if present
+              if (workout.secondaryActivity && !validActivities.includes(workout.secondaryActivity)) {
+                workout.secondaryActivity = undefined;
+              }
+
+              importedWorkouts.push(workout as WorkoutEntry);
+            } catch (error) {
               errorCount++;
-              continue;
+              console.error(`Error parsing workout ${index + 1}:`, error);
             }
+          });
 
-            // Validate activity type first
-            const validActivities: WorkoutEntry['activity'][] = [
-              'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Kickboxing', 
-              'Other', 'Resistance', 'Running', 'Swimming'
-            ];
-            
-            const activity = values[1] as WorkoutEntry['activity'];
-            if (!validActivities.includes(activity)) {
+          if (importedWorkouts.length === 0) {
+            toast.error('No valid workout data found in JSON file');
+            setIsImporting(false);
+            return;
+          }
+
+          // Confirm import
+          const message = `Import ${importedWorkouts.length} workouts?${errorCount > 0 ? ` (${errorCount} workouts skipped due to errors)` : ''}`;
+          
+          if (confirm(message)) {
+            onImportData(importedWorkouts);
+            toast.success(`Successfully imported ${importedWorkouts.length} workouts from JSON`);
+          }
+
+        } catch (jsonError) {
+          // If JSON parsing fails, try CSV as fallback
+          console.log('JSON parsing failed, trying CSV format:', jsonError);
+          
+          const lines = fileContent.split('\n');
+          
+          if (lines.length < 2) {
+            toast.error('File is empty or invalid');
+            setIsImporting(false);
+            return;
+          }
+
+          // Parse headers
+          const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+          
+          // Expected headers
+          const expectedHeaders = [
+            'Date',
+            'Activity',
+            'Duration (minutes)',
+            'Secondary Activity',
+            'Secondary Duration (minutes)',
+            'Exercise Type',
+            'PPL Split',
+            'Custom Activity Name',
+            'Custom Secondary Activity Name',
+            'ID'
+          ];
+
+          // Validate headers
+          if (!expectedHeaders.every(header => headers.includes(header))) {
+            toast.error('File format is invalid. Please use the exported JSON format.');
+            setIsImporting(false);
+            return;
+          }
+
+          const importedWorkouts: WorkoutEntry[] = [];
+          let errorCount = 0;
+
+          // Parse data rows
+          for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            try {
+              const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+              
+              if (values.length < headers.length) {
+                errorCount++;
+                continue;
+              }
+
+              // Validate activity type first
+              const validActivities: WorkoutEntry['activity'][] = [
+                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Kickboxing', 
+                'Other', 'Resistance', 'Running', 'Swimming'
+              ];
+              
+              const activity = values[1] as WorkoutEntry['activity'];
+              if (!validActivities.includes(activity)) {
+                errorCount++;
+                continue;
+              }
+
+              const workout: WorkoutEntry = {
+                id: values[9] || Date.now().toString() + i,
+                date: new Date(values[0]).toISOString(),
+                activity: activity,
+                duration: parseInt(values[2]) || 0,
+                secondaryActivity: values[3] && validActivities.includes(values[3] as WorkoutEntry['activity']) ? values[3] as WorkoutEntry['activity'] : undefined,
+                secondaryDuration: values[4] ? parseInt(values[4]) : undefined,
+                exerciseType: values[5] as WorkoutEntry['exerciseType'] || undefined,
+                pplSplit: values[6] as WorkoutEntry['pplSplit'] || undefined,
+                customActivityName: values[7] || undefined,
+                customSecondaryActivityName: values[8] || undefined
+              };
+
+              // Validate required fields
+              if (!workout.duration || isNaN(workout.duration)) {
+                errorCount++;
+                continue;
+              }
+
+              // Validate exercise type if present
+              const validExerciseTypes: WorkoutEntry['exerciseType'][] = ['Push', 'Pull', 'Legs'];
+              if (workout.exerciseType && !validExerciseTypes.includes(workout.exerciseType)) {
+                workout.exerciseType = undefined;
+              }
+
+              // Validate PPL split if present
+              const validPplSplits: WorkoutEntry['pplSplit'][] = ['Push', 'Pull', 'Legs'];
+              if (workout.pplSplit && !validPplSplits.includes(workout.pplSplit)) {
+                workout.pplSplit = undefined;
+              }
+
+              importedWorkouts.push(workout);
+            } catch (error) {
               errorCount++;
-              continue;
+              console.error(`Error parsing row ${i + 1}:`, error);
             }
+          }
 
-            const workout: WorkoutEntry = {
-              id: values[9] || Date.now().toString() + i,
-              date: new Date(values[0]).toISOString(),
-              activity: activity,
-              duration: parseInt(values[2]) || 0,
-              secondaryActivity: values[3] && validActivities.includes(values[3] as WorkoutEntry['activity']) ? values[3] as WorkoutEntry['activity'] : undefined,
-              secondaryDuration: values[4] ? parseInt(values[4]) : undefined,
-              exerciseType: values[5] as WorkoutEntry['exerciseType'] || undefined,
-              pplSplit: values[6] as WorkoutEntry['pplSplit'] || undefined,
-              customActivityName: values[7] || undefined,
-              customSecondaryActivityName: values[8] || undefined
-            };
+          if (importedWorkouts.length === 0) {
+            toast.error('No valid workout data found in file');
+            setIsImporting(false);
+            return;
+          }
 
-            // Validate required fields
-            if (!workout.duration || isNaN(workout.duration)) {
-              errorCount++;
-              continue;
-            }
-
-            // Validate exercise type if present
-            const validExerciseTypes: WorkoutEntry['exerciseType'][] = ['Push', 'Pull', 'Legs'];
-            if (workout.exerciseType && !validExerciseTypes.includes(workout.exerciseType)) {
-              workout.exerciseType = undefined;
-            }
-
-            // Validate PPL split if present
-            const validPplSplits: WorkoutEntry['pplSplit'][] = ['Push', 'Pull', 'Legs'];
-            if (workout.pplSplit && !validPplSplits.includes(workout.pplSplit)) {
-              workout.pplSplit = undefined;
-            }
-
-            importedWorkouts.push(workout);
-          } catch (error) {
-            errorCount++;
-            console.error(`Error parsing row ${i + 1}:`, error);
+          // Confirm import
+          const message = `Import ${importedWorkouts.length} workouts?${errorCount > 0 ? ` (${errorCount} rows skipped due to errors)` : ''}`;
+          
+          if (confirm(message)) {
+            onImportData(importedWorkouts);
+            toast.success(`Successfully imported ${importedWorkouts.length} workouts from CSV`);
           }
         }
 
-        if (importedWorkouts.length === 0) {
-          toast.error('No valid workout data found in CSV file');
-          setIsImporting(false);
-          return;
-        }
-
-        // Confirm import
-        const message = `Import ${importedWorkouts.length} workouts?${errorCount > 0 ? ` (${errorCount} rows skipped due to errors)` : ''}`;
-        
-        if (confirm(message)) {
-          onImportData(importedWorkouts);
-          toast.success(`Successfully imported ${importedWorkouts.length} workouts`);
-        }
-
       } catch (error) {
-        console.error('Error importing CSV:', error);
-        toast.error('Failed to import CSV file');
+        console.error('Error importing file:', error);
+        toast.error('Failed to import file');
       } finally {
         setIsImporting(false);
         // Reset file input
@@ -249,7 +310,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
     };
 
     reader.onerror = () => {
-      toast.error('Failed to read CSV file');
+      toast.error('Failed to read file');
       setIsImporting(false);
       event.target.value = '';
     };
@@ -279,7 +340,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
             <span className="font-medium text-gray-700">Export Data</span>
           </div>
           <p className="text-sm text-gray-600">
-            Download all your workout data as a CSV file for backup or analysis.
+            Download all your workout data as a JSON file for backup or analysis.
             {typeof window !== 'undefined' && 'Capacitor' in window && (
               <span className="block mt-1 text-blue-600">📱 Will save to device file system on mobile</span>
             )}
@@ -290,7 +351,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
             className="w-full bg-green-500 hover:bg-green-600 text-white"
           >
             <Download className="h-4 w-4 mr-2" />
-            {isExporting ? 'Exporting...' : `Export CSV (${workouts.length} workouts)`}
+            {isExporting ? 'Exporting...' : `Export JSON (${workouts.length} workouts)`}
           </Button>
         </div>
 
@@ -301,12 +362,12 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
             <span className="font-medium text-gray-700">Import Data</span>
           </div>
           <p className="text-sm text-gray-600">
-            Import workout data from a CSV file. Use the exported format for best compatibility.
+            Import workout data from a JSON file. CSV format is also supported as fallback.
           </p>
           <div className="relative">
             <input
               type="file"
-              accept=".csv"
+              accept=".json,.csv"
               onChange={importFromCSV}
               disabled={isImporting}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -316,7 +377,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
               className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
               <Upload className="h-4 w-4 mr-2" />
-              {isImporting ? 'Importing...' : 'Import CSV'}
+              {isImporting ? 'Importing...' : 'Import JSON/CSV'}
             </Button>
           </div>
         </div>
