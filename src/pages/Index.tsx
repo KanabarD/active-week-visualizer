@@ -43,27 +43,27 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/80 border-2 border-blue-200 p-1">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-1">
             <TabsTrigger 
               value="calendar" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black"
             >
               Workout Calendar
             </TabsTrigger>
             <TabsTrigger 
               value="analytics" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-blue-500 data-[state=active]:text-white"
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-emerald-500 data-[state=active]:text-black"
             >
               Analytics
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
-              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+              className="text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-lime-500 data-[state=active]:text-black"
             >
               Reports
             </TabsTrigger>
