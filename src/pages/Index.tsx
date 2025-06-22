@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
 import { Reports } from "@/components/Reports";
@@ -19,8 +19,34 @@ export interface WorkoutEntry {
   customSecondaryActivityName?: string; // For when secondaryActivity is "Other"
 }
 
+const STORAGE_KEY = 'workout-tracker-data';
+
 const Index = () => {
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+
+  // Load workouts from localStorage on app start
+  useEffect(() => {
+    try {
+      const savedWorkouts = localStorage.getItem(STORAGE_KEY);
+      if (savedWorkouts) {
+        const parsedWorkouts = JSON.parse(savedWorkouts);
+        setWorkouts(parsedWorkouts);
+        console.log('Loaded workouts from storage:', parsedWorkouts.length);
+      }
+    } catch (error) {
+      console.error('Error loading workouts from storage:', error);
+    }
+  }, []);
+
+  // Save workouts to localStorage whenever workouts change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
+      console.log('Saved workouts to storage:', workouts.length);
+    } catch (error) {
+      console.error('Error saving workouts to storage:', error);
+    }
+  }, [workouts]);
 
   const addWorkout = (workout: Omit<WorkoutEntry, 'id'>) => {
     const newWorkout: WorkoutEntry = {
