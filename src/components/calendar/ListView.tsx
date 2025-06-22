@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   format, 
@@ -13,7 +12,7 @@ import {
   subWeeks
 } from "date-fns";
 import { WorkoutEntry } from "@/pages/Index";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +44,11 @@ export function ListView({
     window.addEventListener('jumpToToday', handleJumpToToday);
     return () => window.removeEventListener('jumpToToday', handleJumpToToday);
   }, []);
+
+  const jumpToToday = () => {
+    // Dispatch the jumpToToday event to trigger navigation to current week
+    window.dispatchEvent(new CustomEvent('jumpToToday'));
+  };
 
   const getWorkoutsForDate = (date: Date) => {
     return workouts.filter(workout => 
@@ -100,13 +104,22 @@ export function ListView({
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <div className="text-center">
+        <div className="text-center flex-1">
           <h2 className="text-lg font-bold text-gray-800">
             Weekly View
           </h2>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 mb-2">
             {getWeekDateRange()}
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={jumpToToday}
+            className="h-7 px-3 border border-blue-400 hover:border-blue-600 hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-medium"
+          >
+            <Calendar className="h-3 w-3 mr-1" />
+            Today
+          </Button>
         </div>
         
         <Button
