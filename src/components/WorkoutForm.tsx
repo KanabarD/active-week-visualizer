@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format } from "date-fns";
 import { Copy } from "lucide-react";
@@ -6,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WorkoutEntry } from "@/pages/Index";
 
@@ -25,7 +23,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
   const [secondaryDuration, setSecondaryDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [pplSplit, setPplSplit] = useState<WorkoutEntry['pplSplit'] | ''>('');
-  const [notes, setNotes] = useState('');
 
   const getMostRecentWorkout = () => {
     if (workouts.length === 0) return null;
@@ -46,7 +43,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setSecondaryDuration(recentWorkout.secondaryDuration ? recentWorkout.secondaryDuration.toString() : '');
       setExerciseType(recentWorkout.exerciseType || '');
       setPplSplit(recentWorkout.pplSplit || '');
-      setNotes(recentWorkout.notes || '');
     }
   };
 
@@ -60,7 +56,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
         secondaryDuration: secondaryActivity && secondaryDuration ? parseInt(secondaryDuration) : undefined,
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         pplSplit: secondaryActivity === 'Resistance' && pplSplit ? pplSplit as WorkoutEntry['pplSplit'] : undefined,
-        notes: notes || undefined,
       });
       // Reset form
       setActivity('');
@@ -69,7 +64,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
       setSecondaryDuration('');
       setExerciseType('');
       setPplSplit('');
-      setNotes('');
     }
   };
 
@@ -81,7 +75,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
     setSecondaryDuration('');
     setExerciseType('');
     setPplSplit('');
-    setNotes('');
     onClose();
   };
 
@@ -235,18 +228,6 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
               </Select>
             </div>
           )}
-
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <Label htmlFor="notes" className="text-sm font-semibold text-gray-800">Notes (optional)</Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any notes about your workout..."
-              rows={3}
-              className="mt-1 border-gray-200 focus:border-gray-400"
-            />
-          </div>
 
           <div className="flex gap-2 pt-2">
             <Button 

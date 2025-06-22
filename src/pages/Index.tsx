@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
@@ -15,7 +14,6 @@ export interface WorkoutEntry {
   secondaryDuration?: number; // in minutes for secondary activity
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
   pplSplit?: 'Push' | 'Pull' | 'Legs'; // Only for secondary Resistance training
-  notes?: string;
 }
 
 const Index = () => {
