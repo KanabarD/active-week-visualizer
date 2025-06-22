@@ -20,6 +20,20 @@ const activityColors = {
 };
 
 export function Analytics({ workouts }: AnalyticsProps) {
+  const formatDuration = (minutes: number) => {
+    if (minutes === 0) return "0m";
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    
+    if (hours === 0) {
+      return `${remainingMinutes}m`;
+    } else if (remainingMinutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${remainingMinutes}m`;
+    }
+  };
+
   const analyticsData = useMemo(() => {
     // Weekly activity distribution
     const weeklyData = workouts.reduce((acc, workout) => {
@@ -91,7 +105,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
             <CardTitle className="text-sm font-medium text-gray-600">Total Duration</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{analyticsData.totalDuration}m</div>
+            <div className="text-2xl font-bold text-green-600">{formatDuration(analyticsData.totalDuration)}</div>
           </CardContent>
         </Card>
 
@@ -100,7 +114,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
             <CardTitle className="text-sm font-medium text-gray-600">Average Duration</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{analyticsData.averageDuration}m</div>
+            <div className="text-2xl font-bold text-purple-600">{formatDuration(analyticsData.averageDuration)}</div>
           </CardContent>
         </Card>
 
