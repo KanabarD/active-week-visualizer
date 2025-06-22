@@ -73,37 +73,37 @@ export function Reports({ workouts }: ReportsProps) {
   }, [workouts]);
 
   const ReportCard = ({ title, report }: { title: string; report: any }) => (
-    <Card className="bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-200">
+    <Card className="bg-white border border-gray-200 shadow-sm">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <span className="bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent">{title}</span>
-          <Badge variant="outline" className="border-lime-300 text-green-700 bg-white/70">{report.period}</Badge>
+          <span className="text-gray-800">{title}</span>
+          <Badge variant="outline" className="border-gray-300 text-gray-600 bg-gray-50">{report.period}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="bg-white/60 p-3 rounded-lg border border-lime-200">
-            <div className="text-2xl font-bold text-lime-600">{report.totalWorkouts}</div>
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <div className="text-2xl font-bold text-gray-700">{report.totalWorkouts}</div>
             <div className="text-sm text-gray-600">Workouts</div>
           </div>
-          <div className="bg-white/60 p-3 rounded-lg border border-lime-200">
-            <div className="text-2xl font-bold text-green-600">{report.totalDuration}m</div>
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <div className="text-2xl font-bold text-gray-700">{report.totalDuration}m</div>
             <div className="text-sm text-gray-600">Total Time</div>
           </div>
-          <div className="bg-white/60 p-3 rounded-lg border border-lime-200">
-            <div className="text-2xl font-bold text-green-700">{report.averageDuration}m</div>
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <div className="text-2xl font-bold text-gray-700">{report.averageDuration}m</div>
             <div className="text-sm text-gray-600">Avg Duration</div>
           </div>
         </div>
 
         {Object.keys(report.activityStats).length > 0 && (
-          <div className="bg-white/60 p-4 rounded-lg border border-lime-200">
-            <h4 className="font-semibold mb-2 text-green-800">Activity Breakdown</h4>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 className="font-semibold mb-2 text-gray-700">Activity Breakdown</h4>
             <div className="space-y-2">
               {Object.entries(report.activityStats).map(([activity, stats]: [string, any]) => (
-                <div key={activity} className="flex justify-between items-center p-2 bg-gradient-to-r from-lime-100 to-green-100 rounded border border-lime-200">
-                  <span className="font-medium text-green-800">{activity}</span>
-                  <div className="text-sm text-green-600">
+                <div key={activity} className="flex justify-between items-center p-2 bg-white rounded border border-gray-200">
+                  <span className="font-medium text-gray-700">{activity}</span>
+                  <div className="text-sm text-gray-600">
                     {stats.count} sessions • {stats.duration}m
                   </div>
                 </div>
