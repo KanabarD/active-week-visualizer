@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Download, Upload, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,41 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
     const dataStr = JSON.stringify(workouts, null, 2);
     const fileName = `workout-data-${new Date().toISOString().split('T')[0]}.json`;
     
-    // Try to use native filesystem first (for mobile/native apps)
+    // Try to use File System Access API first (modern browsers)
+    if ('showSaveFilePicker' in window) {
+      try {
+        console.log('💾 Using File System Access API to save with directory picker...');
+        
+        const fileHandle = await (window as any).showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: 'JSON files',
+            accept: { 'application/json': ['.json'] },
+          }],
+        });
+        
+        const writable = await fileHandle.createWritable();
+        await writable.write(dataStr);
+        await writable.close();
+        
+        console.log('✅ Successfully saved backup using directory picker');
+        
+        toast({
+          title: "Backup Saved",
+          description: `Your workout data has been saved to your selected location`,
+        });
+        return;
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('❌ Failed to save with File System Access API:', error);
+        } else {
+          console.log('📝 User cancelled file save dialog');
+          return;
+        }
+      }
+    }
+    
+    // Try to use native filesystem for mobile/native apps
     if (Capacitor.isNativePlatform()) {
       try {
         console.log('📱 Using native filesystem to save to Files folder...');
@@ -194,7 +227,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
             <h3 className="font-semibold text-green-800 mb-2 text-base">Export Data</h3>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Save your workout data directly to your Files folder or download for backup.
+              Choose where to save your workout data backup file.
             </p>
             <div className="space-y-3">
               <Button 
@@ -203,7 +236,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 disabled={workouts.length === 0}
               >
                 <Download className="h-5 w-5 mr-2" />
-                Save to Files
+                Backup Locally
               </Button>
               <Button 
                 onClick={shareData}
