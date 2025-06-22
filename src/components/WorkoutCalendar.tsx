@@ -215,22 +215,27 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
           return (
             <Card 
               key={index} 
-              className={`${viewMode === 'weekly' ? 'min-h-[120px] sm:min-h-[140px]' : 'min-h-[80px] sm:min-h-[100px]'} transition-all duration-200 hover:shadow-md hover:scale-105 ${
+              className={`${
+                viewMode === 'weekly' 
+                  ? 'h-[140px] sm:h-[160px]' 
+                  : 'h-[120px] sm:h-[140px]'
+              } transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${
                 isToday ? 'ring-2 sm:ring-3 ring-blue-400 bg-blue-50' : 
                 isCurrentMonth ? 'bg-white' : 'bg-gray-100'
-              } ${!isCurrentMonth ? 'opacity-60' : ''} border ${isToday ? 'border-blue-300' : 'border-gray-200'} overflow-hidden`}
+              } ${!isCurrentMonth ? 'opacity-60' : ''} border ${isToday ? 'border-blue-300' : 'border-gray-200'}`}
             >
-              <CardContent className={`${viewMode === 'weekly' ? 'p-4 sm:p-6' : 'p-1 sm:p-3'} space-y-1 sm:space-y-2 h-full flex flex-col overflow-hidden`}>
-                <div className={`text-center font-bold ${
+              <CardContent className={`${viewMode === 'weekly' ? 'p-3 sm:p-4' : 'p-2 sm:p-3'} h-full flex flex-col`}>
+                {/* Date Header - Fixed Height */}
+                <div className={`text-center font-bold flex-shrink-0 ${
                   isToday ? 'text-blue-700' : 
                   isCurrentMonth ? 'text-gray-900' : 'text-gray-500'
-                } ${viewMode === 'weekly' ? 'text-lg sm:text-xl mb-3 sm:mb-4' : 'text-xs sm:text-sm'} flex-shrink-0`}>
+                } ${viewMode === 'weekly' ? 'text-lg sm:text-xl mb-2 sm:mb-3 h-12 sm:h-16' : 'text-xs sm:text-sm h-6 sm:h-8 mb-1'}`}>
                   {viewMode === 'weekly' ? (
-                    <div>
-                      <div className="text-sm text-gray-600 uppercase tracking-wide font-semibold">
+                    <div className="flex flex-col justify-center h-full">
+                      <div className="text-xs text-gray-600 uppercase tracking-wide font-semibold">
                         {format(day, 'EEEE')}
                       </div>
-                      <div className={`${isToday ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} mt-1`}>
+                      <div className={`${isToday ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'} mt-1`}>
                         {format(day, 'd')}
                       </div>
                       <div className="text-xs text-gray-500">
@@ -238,55 +243,71 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                       </div>
                     </div>
                   ) : (
-                    format(day, 'd')
+                    <div className="flex items-center justify-center h-full">
+                      {format(day, 'd')}
+                    </div>
                   )}
                 </div>
                 
-                <div className="flex-1 space-y-1 overflow-hidden">
-                  {dayWorkouts.map((workout) => (
-                    <div key={workout.id} className="group relative">
-                      <div 
-                        className={`w-full flex justify-between font-medium rounded-lg px-2 sm:px-3 py-2 border ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer ${viewMode === 'weekly' ? 'text-sm sm:text-base min-h-[32px] sm:min-h-[36px]' : 'text-[10px] sm:text-xs min-h-[20px] sm:min-h-[24px]'} overflow-hidden`}
-                        title={formatWorkoutDisplay(workout)}
-                      >
-                        <span className="flex-1 text-left truncate pr-1">
-                          {formatWorkoutDisplay(workout)}
-                        </span>
-                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-gray-200 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
-                            onClick={() => handleEditWorkout(workout)}
-                          >
-                            <Edit3 className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-2 w-2 sm:h-3 sm:w-3'} />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-red-200 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
-                            onClick={() => onDeleteWorkout(workout.id)}
-                          >
-                            <Trash2 className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-2 w-2 sm:h-3 sm:w-3'} />
-                          </Button>
+                {/* Workout Content - Flexible Height with Overflow */}
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+                    {dayWorkouts.map((workout) => (
+                      <div key={workout.id} className="group relative">
+                        <div 
+                          className={`w-full flex items-center justify-between font-medium rounded-lg px-2 py-1 border ${activityColors[workout.activity]} hover:scale-[1.02] transition-transform cursor-pointer ${
+                            viewMode === 'weekly' 
+                              ? 'text-xs sm:text-sm min-h-[24px] sm:min-h-[28px]' 
+                              : 'text-[10px] sm:text-xs min-h-[18px] sm:min-h-[20px]'
+                          }`}
+                          title={formatWorkoutDisplay(workout)}
+                        >
+                          <span className="flex-1 text-left truncate pr-1 leading-tight">
+                            {formatWorkoutDisplay(workout)}
+                          </span>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-gray-200 rounded-full ${
+                                viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3 w-3 sm:h-4 sm:w-4'
+                              }`}
+                              onClick={() => handleEditWorkout(workout)}
+                            >
+                              <Edit3 className={viewMode === 'weekly' ? 'h-3 w-3 sm:h-4 sm:w-4' : 'h-2 w-2 sm:h-3 sm:w-3'} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-red-200 rounded-full ${
+                                viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3 w-3 sm:h-4 sm:w-4'
+                              }`}
+                              onClick={() => onDeleteWorkout(workout.id)}
+                            >
+                              <Trash2 className={viewMode === 'weekly' ? 'h-3 w-3 sm:h-4 sm:w-4' : 'h-2 w-2 sm:h-3 sm:w-3'} />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {isCurrentMonth && (
-                  <div className="flex justify-center flex-shrink-0">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className={`text-gray-600 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 ${viewMode === 'weekly' ? 'h-10 w-10 sm:h-12 sm:w-12 p-0' : 'h-6 w-6 sm:h-8 sm:w-8 p-0'}`}
-                      onClick={() => handleAddWorkout(day)}
-                    >
-                      <Plus className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3 w-3 sm:h-4 sm:w-4'} />
-                    </Button>
+                    ))}
                   </div>
-                )}
+                  
+                  {/* Add Button - Fixed at Bottom */}
+                  {isCurrentMonth && (
+                    <div className="flex justify-center pt-1 flex-shrink-0">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className={`text-gray-600 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 ${
+                          viewMode === 'weekly' ? 'h-8 w-8 sm:h-10 sm:w-10 p-0' : 'h-6 w-6 sm:h-8 sm:w-8 p-0'
+                        }`}
+                        onClick={() => handleAddWorkout(day)}
+                      >
+                        <Plus className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3 w-3 sm:h-4 sm:w-4'} />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
