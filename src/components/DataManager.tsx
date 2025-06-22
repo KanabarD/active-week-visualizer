@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Download, Upload, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -159,39 +158,39 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="bg-white/70 p-4 rounded-lg border border-lime-100">
-            <h3 className="font-semibold text-green-800 mb-2">Export Data</h3>
-            <p className="text-sm text-gray-600 mb-3">
+        <div className="space-y-3">
+          <div className="bg-white/70 p-3 rounded-lg border border-lime-100">
+            <h3 className="font-semibold text-green-800 mb-1 text-sm">Export Data</h3>
+            <p className="text-xs text-gray-600 mb-2">
               Download or share your workout data for backup or sharing.
             </p>
             <div className="flex gap-2">
               <Button 
                 onClick={exportData}
-                className="flex-1 min-h-[48px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation"
+                className="flex-1 min-h-[40px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold touch-manipulation text-xs"
                 disabled={workouts.length === 0}
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-3 w-3 mr-1" />
                 Backup Locally
               </Button>
               <Button 
                 onClick={shareData}
                 variant="outline"
-                className="flex-1 min-h-[48px] border-green-300 hover:bg-green-50 touch-manipulation"
+                className="flex-1 min-h-[40px] border-green-300 hover:bg-green-50 touch-manipulation text-xs"
                 disabled={workouts.length === 0}
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share2 className="h-3 w-3 mr-1" />
                 Share
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 mt-1">
               {workouts.length} workouts available
             </p>
           </div>
           
-          <div className="bg-white/70 p-4 rounded-lg border border-lime-100">
-            <h3 className="font-semibold text-green-800 mb-2">Import Data</h3>
-            <p className="text-sm text-gray-600 mb-3">
+          <div className="bg-white/70 p-3 rounded-lg border border-lime-100">
+            <h3 className="font-semibold text-green-800 mb-1 text-sm">Import Data</h3>
+            <p className="text-xs text-gray-600 mb-2">
               Import workout data from a previously exported JSON file.
             </p>
             <Label htmlFor="file-upload" className="cursor-pointer">
@@ -200,7 +199,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 type="file"
                 accept=".json"
                 onChange={handleFileUpload}
-                className="min-h-[48px] border-lime-200 focus:border-lime-400 touch-manipulation"
+                className="min-h-[40px] border-lime-200 focus:border-lime-400 touch-manipulation"
               />
             </Label>
           </div>
