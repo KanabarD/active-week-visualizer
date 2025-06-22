@@ -79,6 +79,27 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
     setCurrentDate(newDate);
   };
 
+  const formatWorkoutDisplay = (workout: WorkoutEntry) => {
+    let displayText = workout.activity;
+    
+    // Add exercise type for primary resistance training
+    if (workout.exerciseType) {
+      displayText += ` - ${workout.exerciseType}`;
+    }
+    
+    // Add secondary activity if it exists
+    if (workout.secondaryActivity) {
+      displayText += ` + ${workout.secondaryActivity}`;
+      
+      // Add PPL Split for secondary resistance training
+      if (workout.pplSplit) {
+        displayText += ` - ${workout.pplSplit}`;
+      }
+    }
+    
+    return displayText;
+  };
+
   return (
     <div className="space-y-6">
       {/* Month Navigation */}
@@ -145,13 +166,9 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
                       className={`w-full justify-between text-xs font-semibold ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer`}
                     >
                       <span className="truncate text-left">
-                        {workout.activity}
-                        {workout.secondaryActivity && ` + ${workout.secondaryActivity}`}
-                        {workout.exerciseType && ` - ${workout.exerciseType}`}
-                        {workout.pplSplit && ` / ${workout.pplSplit}`}
+                        {formatWorkoutDisplay(workout)}
                       </span>
                       <div className="flex items-center gap-1 ml-2">
-                        <span className="font-bold">{workout.duration}m</span>
                         <Button
                           size="sm"
                           variant="ghost"
