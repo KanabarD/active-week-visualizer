@@ -1,4 +1,4 @@
-import { LifeBuoy } from "lucide-react";
+import { Lifelines } from "lucide-react";
 
 export function Header() {
   return (
@@ -6,7 +6,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg">
-            <LifeBuoy className="h-6 w-6 text-white" />
+            <Lifelines className="h-6 w-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
