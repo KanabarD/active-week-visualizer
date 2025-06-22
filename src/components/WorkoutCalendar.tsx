@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, startOfDay, addWeeks, subWeeks } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3, Calendar, CalendarDays } from "lucide-react";
@@ -15,14 +16,14 @@ interface WorkoutCalendarProps {
 }
 
 const activityColors = {
-  "Brazilian Jiu-Jitsu": "bg-purple-200 text-purple-900 border-purple-300",
-  Cycling: "bg-cyan-200 text-cyan-900 border-cyan-300",
-  Hiking: "bg-green-200 text-green-900 border-green-300",
-  Kickboxing: "bg-red-200 text-red-900 border-red-300",
-  Other: "bg-gray-200 text-gray-900 border-gray-300",
-  Resistance: "bg-orange-200 text-orange-900 border-orange-300",
-  Running: "bg-emerald-200 text-emerald-900 border-emerald-300",
-  Swimming: "bg-blue-200 text-blue-900 border-blue-300",
+  "Brazilian Jiu-Jitsu": "bg-purple-100 text-purple-800 border-purple-200",
+  Cycling: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  Hiking: "bg-green-100 text-green-800 border-green-200",
+  Kickboxing: "bg-red-100 text-red-800 border-red-200",
+  Other: "bg-gray-100 text-gray-800 border-gray-200",
+  Resistance: "bg-orange-100 text-orange-800 border-orange-200",
+  Running: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  Swimming: "bg-blue-100 text-blue-800 border-blue-200",
 };
 
 export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpdateWorkout }: WorkoutCalendarProps) {
@@ -128,7 +129,6 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
       ? workout.customActivityName 
       : workout.activity;
     
-    // Add exercise type for resistance training
     if (workout.exerciseType) {
       displayText += ` - ${workout.exerciseType}`;
     }
@@ -147,64 +147,86 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* View Mode Toggle and Navigation */}
-      <Card className="bg-white border border-gray-200 shadow-sm">
-        <CardHeader className="pb-3 sm:pb-6">
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="bg-white shadow-lg border-0">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigateTime('prev')}
-              className="bg-white border-gray-300 hover:bg-gray-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
+              className="h-10 w-10 p-0 border-2 border-gray-300 hover:border-gray-400"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
-            <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-              <CardTitle className="text-lg sm:text-2xl font-bold text-gray-800 text-center">
+            
+            <div className="flex flex-col items-center space-y-3">
+              <CardTitle className="text-3xl font-bold text-gray-900">
                 {getDateRangeText()}
               </CardTitle>
-              <div className="flex items-center space-x-1 sm:space-x-2 bg-gray-50 rounded-lg p-1">
+              
+              <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
                 <Button
                   variant={viewMode === 'monthly' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('monthly')}
-                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'monthly' ? 'bg-gray-800 text-white' : ''}`}
+                  className={`h-9 px-4 font-semibold ${
+                    viewMode === 'monthly' 
+                      ? 'bg-gray-800 text-white shadow-md' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
                 >
-                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  <Calendar className="h-4 w-4 mr-2" />
                   Monthly
                 </Button>
                 <Button
                   variant={viewMode === 'weekly' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('weekly')}
-                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'weekly' ? 'bg-gray-800 text-white' : ''}`}
+                  className={`h-9 px-4 font-semibold ${
+                    viewMode === 'weekly' 
+                      ? 'bg-gray-800 text-white shadow-md' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
                 >
-                  <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  <CalendarDays className="h-4 w-4 mr-2" />
                   Weekly
                 </Button>
               </div>
             </div>
+            
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigateTime('next')}
-              className="bg-white border-gray-300 hover:bg-gray-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
+              className="h-10 w-10 p-0 border-2 border-gray-300 hover:border-gray-400"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>
       </Card>
 
       {/* Calendar Grid */}
-      <div className={`grid gap-1 sm:gap-3 ${viewMode === 'weekly' ? 'grid-cols-1' : 'grid-cols-7'}`}>
+      <div className={`${
+        viewMode === 'weekly' 
+          ? 'space-y-4' 
+          : 'grid grid-cols-7 gap-4'
+      }`}>
+        
         {/* Day Headers for monthly view */}
-        {viewMode === 'monthly' && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayName) => (
-          <div key={dayName} className="p-2 sm:p-3 text-center text-sm sm:text-base font-bold text-gray-800 bg-gray-50 rounded-lg border border-gray-200">
-            {dayName}
-          </div>
-        ))}
+        {viewMode === 'monthly' && (
+          <>
+            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((dayName) => (
+              <div key={dayName} className="p-4 text-center">
+                <div className="text-lg font-bold text-gray-800 bg-gray-50 py-3 rounded-lg border">
+                  {dayName}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
         
         {/* Calendar Days */}
         {days.map((day, index) => {
@@ -217,97 +239,94 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
               key={index} 
               className={`${
                 viewMode === 'weekly' 
-                  ? 'h-[180px] sm:h-[200px]' 
-                  : 'h-[140px] sm:h-[160px]'
-              } transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${
-                isToday ? 'ring-2 sm:ring-3 ring-blue-400 bg-blue-50' : 
-                isCurrentMonth ? 'bg-white' : 'bg-gray-100'
-              } ${!isCurrentMonth ? 'opacity-60' : ''} border ${isToday ? 'border-blue-300' : 'border-gray-200'}`}
+                  ? 'min-h-[250px]' 
+                  : 'min-h-[200px]'
+              } ${
+                isToday 
+                  ? 'ring-4 ring-blue-400 bg-blue-50 border-blue-300' 
+                  : isCurrentMonth 
+                    ? 'bg-white border-gray-200' 
+                    : 'bg-gray-50 border-gray-100 opacity-60'
+              } shadow-md hover:shadow-lg transition-all duration-200`}
             >
-              <CardContent className={`${viewMode === 'weekly' ? 'p-3 sm:p-4' : 'p-2 sm:p-3'} h-full flex flex-col`}>
-                {/* Date Header - Fixed Height */}
-                <div className={`text-center font-bold flex-shrink-0 ${
+              <CardContent className="p-4 h-full flex flex-col">
+                {/* Date Header */}
+                <div className={`text-center font-bold mb-4 ${
                   isToday ? 'text-blue-700' : 
                   isCurrentMonth ? 'text-gray-900' : 'text-gray-500'
-                } ${viewMode === 'weekly' ? 'text-xl sm:text-2xl mb-3 sm:mb-4 h-16 sm:h-20' : 'text-base sm:text-lg h-8 sm:h-10 mb-2'}`}>
+                }`}>
                   {viewMode === 'weekly' ? (
-                    <div className="flex flex-col justify-center h-full">
-                      <div className="text-sm text-gray-700 uppercase tracking-wide font-semibold">
+                    <div className="space-y-1">
+                      <div className="text-sm text-gray-600 uppercase tracking-wide font-medium">
                         {format(day, 'EEEE')}
                       </div>
-                      <div className={`${isToday ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} mt-1 font-bold`}>
+                      <div className="text-3xl font-bold">
                         {format(day, 'd')}
                       </div>
-                      <div className="text-sm text-gray-600 font-medium">
+                      <div className="text-sm text-gray-600">
                         {format(day, 'MMM yyyy')}
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-base sm:text-lg font-bold">
+                    <div className="text-xl font-bold py-2">
                       {format(day, 'd')}
                     </div>
                   )}
                 </div>
                 
-                {/* Workout Content - Flexible Height with Overflow */}
-                <div className="flex-1 min-h-0 flex flex-col">
-                  <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-                    {dayWorkouts.map((workout) => (
-                      <div key={workout.id} className="group relative">
-                        <div 
-                          className={`w-full flex items-center justify-between font-semibold rounded-lg px-2 py-1.5 border-2 ${activityColors[workout.activity]} hover:scale-[1.02] transition-transform cursor-pointer ${
-                            viewMode === 'weekly' 
-                              ? 'text-sm sm:text-base min-h-[32px] sm:min-h-[36px]' 
-                              : 'text-xs sm:text-sm min-h-[28px] sm:min-h-[32px]'
-                          }`}
-                          title={formatWorkoutDisplay(workout)}
-                        >
-                          <span className="flex-1 text-left truncate pr-1 leading-tight font-semibold">
+                {/* Workouts List */}
+                <div className="flex-1 space-y-3 overflow-y-auto">
+                  {dayWorkouts.map((workout) => (
+                    <div key={workout.id} className="group">
+                      <div 
+                        className={`p-3 rounded-lg border-2 ${activityColors[workout.activity]} 
+                          hover:shadow-md transition-all duration-200 cursor-pointer`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-base leading-tight">
                             {formatWorkoutDisplay(workout)}
                           </span>
-                          <div className="flex items-center gap-1 flex-shrink-0">
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button
                               size="sm"
                               variant="ghost"
-                              className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 hover:bg-gray-300 rounded-full ${
-                                viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-4 w-4 sm:h-5 sm:w-5'
-                              }`}
+                              className="h-8 w-8 p-0 hover:bg-gray-200 rounded-full"
                               onClick={() => handleEditWorkout(workout)}
                             >
-                              <Edit3 className={viewMode === 'weekly' ? 'h-3 w-3 sm:h-4 sm:w-4' : 'h-2 w-2 sm:h-3 sm:w-3'} />
+                              <Edit3 className="h-4 w-4" />
                             </Button>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-700 hover:bg-red-300 rounded-full ${
-                                viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-4 w-4 sm:h-5 sm:w-5'
-                              }`}
+                              className="h-8 w-8 p-0 hover:bg-red-200 rounded-full"
                               onClick={() => onDeleteWorkout(workout.id)}
                             >
-                              <Trash2 className={viewMode === 'weekly' ? 'h-3 w-3 sm:h-4 sm:w-4' : 'h-2 w-2 sm:h-3 sm:w-3'} />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
+                        <div className="text-sm font-medium mt-1 opacity-75">
+                          {workout.duration} min
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                  
-                  {/* Add Button - Fixed at Bottom */}
-                  {isCurrentMonth && (
-                    <div className="flex justify-center pt-2 flex-shrink-0">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className={`text-gray-600 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 ${
-                          viewMode === 'weekly' ? 'h-10 w-10 sm:h-12 sm:w-12 p-0' : 'h-8 w-8 sm:h-10 sm:w-10 p-0'
-                        }`}
-                        onClick={() => handleAddWorkout(day)}
-                      >
-                        <Plus className={viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-4 w-4 sm:h-5 sm:w-5'} />
-                      </Button>
                     </div>
-                  )}
+                  ))}
                 </div>
+                
+                {/* Add Button */}
+                {isCurrentMonth && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-12 w-12 p-0 rounded-full border-2 border-dashed border-gray-400 
+                        hover:border-gray-600 hover:bg-gray-50 transition-all duration-200"
+                      onClick={() => handleAddWorkout(day)}
+                    >
+                      <Plus className="h-6 w-6" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
