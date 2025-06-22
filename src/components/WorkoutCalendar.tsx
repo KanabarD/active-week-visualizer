@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, startOfDay, addWeeks, subWeeks } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3, Calendar, CalendarDays } from "lucide-react";
@@ -285,15 +284,14 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                 ))}
                 
                 {isCurrentMonth && (
-                  <div className="border-2 border-dashed border-blue-300 rounded-lg p-0.5 sm:p-1 bg-blue-50/30">
+                  <div className="flex justify-center">
                     <Button
                       size="sm"
                       variant="ghost"
-                      className={`w-full text-blue-600 hover:text-blue-700 hover:bg-blue-100/50 transition-all duration-200 font-medium ${viewMode === 'weekly' ? 'h-8 sm:h-10 text-xs sm:text-sm' : 'h-6 sm:h-8 text-[10px] sm:text-xs'}`}
+                      className={`text-blue-600 hover:text-blue-700 hover:bg-blue-100 transition-all duration-200 rounded-full border-2 border-dashed border-blue-300 bg-blue-50/30 ${viewMode === 'weekly' ? 'h-8 w-8 sm:h-10 sm:w-10 p-0' : 'h-6 w-6 sm:h-8 sm:w-8 p-0'}`}
                       onClick={() => handleAddWorkout(day)}
                     >
-                      <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-0.5 sm:mr-1" />
-                      Add Workout
+                      <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                 )}
