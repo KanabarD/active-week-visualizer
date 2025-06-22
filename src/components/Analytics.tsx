@@ -57,6 +57,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
       activity: activity.length > 12 ? activity.substring(0, 12) + "..." : activity, // Truncate long names
       fullActivity: activity, // Keep full name for tooltip
       duration: Math.round(duration),
+      durationFormatted: formatDuration(Math.round(duration)), // Add formatted duration
       fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
     }));
 
@@ -65,6 +66,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
     const pieData = Object.entries(weeklyData).map(([activity, duration]) => ({
       name: activity,
       value: Math.round(duration),
+      valueFormatted: formatDuration(Math.round(duration)), // Add formatted duration
       percentage: ((duration / totalDuration) * 100).toFixed(1),
       fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
     }));
@@ -133,7 +135,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Activity Duration (Minutes)</CardTitle>
+            <CardTitle>Activity Duration</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={350}>
@@ -156,7 +158,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     fontSize: '14px'
                   }}
                   formatter={(value, name, props) => [
-                    `${value} minutes`,
+                    props.payload?.durationFormatted || formatDuration(Number(value)),
                     props.payload?.fullActivity || name
                   ]}
                 />
@@ -178,7 +180,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percentage, value }) => {
+                  label={({ name, percentage, valueFormatted }) => {
                     // Only show label if percentage is > 5% to avoid overcrowding
                     if (parseFloat(percentage) > 5) {
                       const shortName = name.length > 8 ? name.substring(0, 8) + "..." : name;
@@ -203,7 +205,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     fontSize: '14px'
                   }}
                   formatter={(value, name) => [
-                    `${value} minutes (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
+                    `${analyticsData.pieData.find(d => d.name === name)?.valueFormatted || formatDuration(Number(value))} (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
                     name
                   ]}
                 />
