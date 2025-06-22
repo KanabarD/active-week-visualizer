@@ -73,10 +73,15 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   const handleFormUpdate = (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
-    onUpdateWorkout(id, workoutData);
-    setShowForm(false);
-    setSelectedDate(null);
-    setEditWorkout(null);
+    if (selectedDate) {
+      onUpdateWorkout(id, {
+        ...workoutData,
+        date: selectedDate.toISOString(),
+      });
+      setShowForm(false);
+      setSelectedDate(null);
+      setEditWorkout(null);
+    }
   };
 
   const handleFormClose = () => {
