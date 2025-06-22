@@ -98,7 +98,7 @@ const Index = () => {
         </div>
         
         <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-2 rounded-lg overflow-hidden">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/90 border-2 border-lime-300 p-2 rounded-lg overflow-hidden h-14">
             <TabsTrigger 
               value="calendar" 
               className="text-sm font-semibold rounded-md mx-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-400 data-[state=active]:to-green-500 data-[state=active]:text-black transition-all duration-200"
