@@ -24,19 +24,25 @@ const STORAGE_KEY = 'workout-tracker-data';
 
 const Index = () => {
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load workouts from Capacitor native storage on app start
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
+        console.log('Loading workouts from native storage...');
         const { value } = await Preferences.get({ key: STORAGE_KEY });
         if (value) {
           const parsedWorkouts = JSON.parse(value);
           setWorkouts(parsedWorkouts);
-          console.log('Loaded workouts from native storage:', parsedWorkouts.length);
+          console.log('Successfully loaded workouts from native storage:', parsedWorkouts.length);
+        } else {
+          console.log('No existing workout data found in storage');
         }
       } catch (error) {
         console.error('Error loading workouts from native storage:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -46,32 +52,48 @@ const Index = () => {
   // Save workouts to Capacitor native storage whenever workouts change
   useEffect(() => {
     const saveWorkouts = async () => {
+      if (isLoading) {
+        console.log('Skipping save during initial load');
+        return;
+      }
+
       try {
+        console.log('Saving workouts to native storage:', workouts.length);
         await Preferences.set({
           key: STORAGE_KEY,
           value: JSON.stringify(workouts),
         });
-        console.log('Saved workouts to native storage:', workouts.length);
+        console.log('Successfully saved workouts to native storage');
+        
+        // Verify the save by reading it back
+        const { value } = await Preferences.get({ key: STORAGE_KEY });
+        if (value) {
+          const savedWorkouts = JSON.parse(value);
+          console.log('Verification: Storage contains', savedWorkouts.length, 'workouts');
+        }
       } catch (error) {
         console.error('Error saving workouts to native storage:', error);
       }
     };
 
-    // Only save if we have workouts or if we're clearing them
-    if (workouts.length > 0 || workouts.length === 0) {
-      saveWorkouts();
-    }
-  }, [workouts]);
+    saveWorkouts();
+  }, [workouts, isLoading]);
 
-  const addWorkout = (workout: Omit<WorkoutEntry, 'id'>) => {
+  const addWorkout = async (workout: Omit<WorkoutEntry, 'id'>) => {
     const newWorkout: WorkoutEntry = {
       ...workout,
       id: Date.now().toString(),
     };
-    setWorkouts(prev => [...prev, newWorkout]);
+    console.log('Adding new workout:', newWorkout);
+    setWorkouts(prev => {
+      const updated = [...prev, newWorkout];
+      console.log('Updated workouts count:', updated.length);
+      return updated;
+    });
   };
 
-  const updateWorkout = (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
+  const updateWorkout = async (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
+    console.log('Updating workout:', id);
     setWorkouts(prev => prev.map(workout => 
       workout.id === id 
         ? { ...workout, ...workoutData }
@@ -79,24 +101,40 @@ const Index = () => {
     ));
   };
 
-  const deleteWorkout = (id: string) => {
-    setWorkouts(prev => prev.filter(w => w.id !== id));
+  const deleteWorkout = async (id: string) => {
+    console.log('Deleting workout:', id);
+    setWorkouts(prev => {
+      const updated = prev.filter(w => w.id !== id);
+      console.log('Updated workouts count after deletion:', updated.length);
+      return updated;
+    });
   };
 
-  const handleImportData = (importedWorkouts: WorkoutEntry[]) => {
+  const handleImportData = async (importedWorkouts: WorkoutEntry[]) => {
+    console.log('Importing workouts:', importedWorkouts.length);
     setWorkouts(importedWorkouts);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg font-semibold text-green-700">Loading your workouts...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex flex-col safe-area-inset">
       <Header />
       
-      <main className="flex-1 container mx-auto px-3 py-3 flex flex-col overflow-hidden">
+      <main className="flex-1 container mx-auto px-3 py-3 flex flex-col">
         <div className="flex justify-end mb-3">
           <DataManager workouts={workouts} onImportData={handleImportData} />
         </div>
         
-        <Tabs defaultValue="calendar" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs defaultValue="calendar" className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-3 mb-3 bg-white/90 border-2 border-lime-300 p-1.5 rounded-lg h-14 flex-shrink-0">
             <TabsTrigger 
               value="calendar" 
