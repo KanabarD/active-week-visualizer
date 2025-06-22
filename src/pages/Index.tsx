@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
 import { Reports } from "@/components/Reports";
 import { Header } from "@/components/Header";
-import { DataManager } from "@/components/DataManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export interface WorkoutEntry {
@@ -212,10 +210,6 @@ const Index = () => {
       <Header />
       
       <main className="flex-1 container mx-auto px-3 py-3 flex flex-col">
-        <div className="flex justify-end mb-3">
-          <DataManager workouts={workouts} onImportData={handleImportData} />
-        </div>
-        
         <Tabs defaultValue="calendar" className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-3 mb-3 bg-white/90 border-2 border-lime-300 p-1.5 rounded-lg h-14 flex-shrink-0">
             <TabsTrigger 
