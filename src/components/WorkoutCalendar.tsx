@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, startOfDay, addWeeks, subWeeks } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3, Calendar, CalendarDays } from "lucide-react";
@@ -15,14 +16,14 @@ interface WorkoutCalendarProps {
 }
 
 const activityColors = {
-  "Brazilian Jiu-Jitsu": "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg",
-  Cycling: "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg",
-  Hiking: "bg-gradient-to-r from-lime-500 to-lime-600 text-white shadow-lg",
-  Kickboxing: "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg",
-  Other: "bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg",
-  Resistance: "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg",
-  Running: "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg",
-  Swimming: "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg",
+  "Brazilian Jiu-Jitsu": "bg-purple-100 text-purple-800 border-purple-200",
+  Cycling: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  Hiking: "bg-green-100 text-green-800 border-green-200",
+  Kickboxing: "bg-red-100 text-red-800 border-red-200",
+  Other: "bg-gray-100 text-gray-800 border-gray-200",
+  Resistance: "bg-orange-100 text-orange-800 border-orange-200",
+  Running: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  Swimming: "bg-blue-100 text-blue-800 border-blue-200",
 };
 
 export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpdateWorkout }: WorkoutCalendarProps) {
@@ -149,19 +150,19 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* View Mode Toggle and Navigation */}
-      <Card className="bg-gradient-to-r from-lime-50 to-green-50 border-2 border-lime-200">
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200">
         <CardHeader className="pb-3 sm:pb-6">
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigateTime('prev')}
-              className="bg-white/80 border-lime-300 hover:bg-lime-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
+              className="bg-white/80 border-green-300 hover:bg-green-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-              <CardTitle className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent text-center">
+              <CardTitle className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent text-center">
                 {getDateRangeText()}
               </CardTitle>
               <div className="flex items-center space-x-1 sm:space-x-2 bg-white/80 rounded-lg p-1">
@@ -169,7 +170,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                   variant={viewMode === 'monthly' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('monthly')}
-                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'monthly' ? 'bg-gradient-to-r from-lime-500 to-green-600 text-white' : ''}`}
+                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'monthly' ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : ''}`}
                 >
                   <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Monthly
@@ -178,7 +179,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                   variant={viewMode === 'weekly' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('weekly')}
-                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'weekly' ? 'bg-gradient-to-r from-lime-500 to-green-600 text-white' : ''}`}
+                  className={`h-7 text-xs sm:h-8 px-2 sm:px-3 ${viewMode === 'weekly' ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : ''}`}
                 >
                   <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Weekly
@@ -189,7 +190,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
               variant="outline"
               size="sm"
               onClick={() => navigateTime('next')}
-              className="bg-white/80 border-lime-300 hover:bg-lime-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
+              className="bg-white/80 border-green-300 hover:bg-green-50 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:p-2"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -201,7 +202,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
       <div className={`grid gap-1 sm:gap-3 ${viewMode === 'weekly' ? 'grid-cols-1' : 'grid-cols-7'}`}>
         {/* Day Headers for monthly view */}
         {viewMode === 'monthly' && ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayName) => (
-          <div key={dayName} className="p-1 sm:p-3 text-center text-xs sm:text-sm font-bold text-gray-700 bg-gradient-to-r from-lime-100 to-green-100 rounded-lg border border-lime-200">
+          <div key={dayName} className="p-1 sm:p-3 text-center text-xs sm:text-sm font-bold text-gray-700 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg border border-green-200">
             {dayName}
           </div>
         ))}
@@ -216,9 +217,9 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
             <Card 
               key={index} 
               className={`${viewMode === 'weekly' ? 'min-h-[120px] sm:min-h-[140px]' : 'min-h-[80px] sm:min-h-[100px]'} transition-all duration-200 hover:shadow-xl hover:scale-105 ${
-                isToday ? 'ring-2 sm:ring-3 ring-lime-400 bg-gradient-to-br from-lime-50 to-green-50' : 
-                isCurrentMonth ? 'bg-gradient-to-br from-white to-lime-50' : 'bg-gray-100'
-              } ${!isCurrentMonth ? 'opacity-60' : ''} border-1 sm:border-2 ${isToday ? 'border-lime-300' : 'border-lime-200'}`}
+                isToday ? 'ring-2 sm:ring-3 ring-green-400 bg-gradient-to-br from-green-50 to-emerald-50' : 
+                isCurrentMonth ? 'bg-gradient-to-br from-white to-green-50' : 'bg-gray-100'
+              } ${!isCurrentMonth ? 'opacity-60' : ''} border-1 sm:border-2 ${isToday ? 'border-green-300' : 'border-green-200'}`}
             >
               <CardContent className={`${viewMode === 'weekly' ? 'p-4 sm:p-6' : 'p-1 sm:p-3'} space-y-1 sm:space-y-2`}>
                 <div className={`text-center font-bold ${
@@ -245,7 +246,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                 {dayWorkouts.map((workout) => (
                   <div key={workout.id} className="group relative">
                     <div 
-                      className={`w-full flex justify-between font-semibold rounded-full px-2 sm:px-3 py-2 ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer ${viewMode === 'weekly' ? 'text-sm sm:text-base min-h-[32px] sm:min-h-[36px]' : 'text-[10px] sm:text-xs min-h-[20px] sm:min-h-[24px]'}`}
+                      className={`w-full flex justify-between font-medium rounded-lg px-2 sm:px-3 py-2 border ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer ${viewMode === 'weekly' ? 'text-sm sm:text-base min-h-[32px] sm:min-h-[36px]' : 'text-[10px] sm:text-xs min-h-[20px] sm:min-h-[24px]'}`}
                       title={formatWorkoutDisplay(workout)}
                     >
                       <span className="flex-1 text-left text-wrap break-words leading-tight">
@@ -255,7 +256,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                         <Button
                           size="sm"
                           variant="ghost"
-                          className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-lime-500 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
+                          className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-green-200 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
                           onClick={() => handleEditWorkout(workout)}
                         >
                           <Edit3 className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-2 w-2 sm:h-3 sm:w-3'} />
@@ -263,7 +264,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                         <Button
                           size="sm"
                           variant="ghost"
-                          className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-red-500 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
+                          className={`p-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:bg-red-200 rounded-full ${viewMode === 'weekly' ? 'h-5 w-5 sm:h-6 sm:w-6' : 'h-3 w-3 sm:h-4 sm:w-4'}`}
                           onClick={() => onDeleteWorkout(workout.id)}
                         >
                           <Trash2 className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-2 w-2 sm:h-3 sm:w-3'} />
@@ -278,7 +279,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                     <Button
                       size="sm"
                       variant="ghost"
-                      className={`text-green-600 hover:text-green-700 hover:bg-lime-100 transition-all duration-200 rounded-full border-2 border-dashed border-lime-300 bg-lime-50/30 ${viewMode === 'weekly' ? 'h-10 w-10 sm:h-12 sm:w-12 p-0' : 'h-6 w-6 sm:h-8 sm:w-8 p-0'}`}
+                      className={`text-green-600 hover:text-green-700 hover:bg-green-100 transition-all duration-200 rounded-full border-2 border-dashed border-green-300 bg-green-50/30 ${viewMode === 'weekly' ? 'h-10 w-10 sm:h-12 sm:w-12 p-0' : 'h-6 w-6 sm:h-8 sm:w-8 p-0'}`}
                       onClick={() => handleAddWorkout(day)}
                     >
                       <Plus className={viewMode === 'weekly' ? 'h-4 w-4 sm:h-5 sm:w-5' : 'h-3 w-3 sm:h-4 sm:w-4'} />
