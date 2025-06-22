@@ -95,13 +95,13 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
       
       <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
 
-      {/* Calendar Grid */}
-      <div className="space-y-6">
+      {/* Calendar Grid - 7 columns for all days */}
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-2 h-[calc(100vh-400px)] min-h-[500px]">
         {days.map((day, index) => {
           const dayWorkouts = getWorkoutsForDate(day);
 
