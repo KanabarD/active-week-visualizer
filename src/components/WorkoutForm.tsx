@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,15 +13,36 @@ import { WorkoutEntry } from "@/pages/Index";
 interface WorkoutFormProps {
   date: Date | null;
   isOpen: boolean;
+  workouts: WorkoutEntry[];
   onSubmit: (workout: Omit<WorkoutEntry, 'id' | 'date'>) => void;
   onClose: () => void;
 }
 
-export function WorkoutForm({ date, isOpen, onSubmit, onClose }: WorkoutFormProps) {
+export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
   const [duration, setDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [notes, setNotes] = useState('');
+
+  const getMostRecentWorkout = () => {
+    if (workouts.length === 0) return null;
+    
+    const sortedWorkouts = [...workouts].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    return sortedWorkouts[0];
+  };
+
+  const copyPreviousWorkout = () => {
+    const recentWorkout = getMostRecentWorkout();
+    if (recentWorkout) {
+      setActivity(recentWorkout.activity);
+      setDuration(recentWorkout.duration.toString());
+      setExerciseType(recentWorkout.exerciseType || '');
+      setNotes(recentWorkout.notes || '');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +72,8 @@ export function WorkoutForm({ date, isOpen, onSubmit, onClose }: WorkoutFormProp
 
   if (!date) return null;
 
+  const mostRecentWorkout = getMostRecentWorkout();
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
@@ -58,6 +82,20 @@ export function WorkoutForm({ date, isOpen, onSubmit, onClose }: WorkoutFormProp
             Add Workout for {format(date, 'EEEE, MMMM d')}
           </DialogTitle>
         </DialogHeader>
+        
+        {mostRecentWorkout && (
+          <div className="mb-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={copyPreviousWorkout}
+              className="w-full"
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Previous Workout ({mostRecentWorkout.activity})
+            </Button>
+          </div>
+        )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

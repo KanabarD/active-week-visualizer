@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -179,6 +178,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
       <WorkoutForm
         date={selectedDate}
         isOpen={showForm}
+        workouts={workouts}
         onSubmit={handleFormSubmit}
         onClose={handleFormClose}
       />
