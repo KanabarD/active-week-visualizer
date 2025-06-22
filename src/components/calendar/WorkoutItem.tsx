@@ -36,34 +36,34 @@ export function WorkoutItem({ workout, onEdit, onDelete }: WorkoutItemProps) {
   return (
     <div className="group">
       <div 
-        className={`p-4 rounded-xl border-3 ${activityColors[workout.activity]} 
-          hover:shadow-lg transition-all duration-200 cursor-pointer`}
+        className={`p-2 rounded-lg border-2 ${activityColors[workout.activity]} 
+          hover:shadow-md transition-all duration-200 cursor-pointer`}
       >
         <div className="flex items-center justify-between">
-          <span className="font-bold text-lg leading-tight">
+          <span className="font-bold text-sm leading-tight">
             {formatWorkoutDisplay(workout)}
           </span>
-          <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
               size="sm"
               variant="ghost"
-              className="h-10 w-10 p-0 hover:bg-white/20 rounded-full"
+              className="h-6 w-6 p-0 hover:bg-white/20 rounded-full"
               onClick={() => onEdit(workout)}
             >
-              <Edit3 className="h-5 w-5" />
+              <Edit3 className="h-3 w-3" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="h-10 w-10 p-0 hover:bg-red-500/20 rounded-full"
+              className="h-6 w-6 p-0 hover:bg-red-500/20 rounded-full"
               onClick={() => onDelete(workout.id)}
             >
-              <Trash2 className="h-5 w-5" />
+              <Trash2 className="h-3 w-3" />
             </Button>
           </div>
         </div>
-        <div className="text-base font-semibold mt-2 opacity-90">
-          {workout.duration} minutes
+        <div className="text-xs font-semibold mt-1 opacity-90">
+          {workout.duration}min
         </div>
       </div>
     </div>

@@ -18,11 +18,11 @@ export function WeekSlider({ currentDate, onWeekChange }: WeekSliderProps) {
 
   return (
     <Card className="bg-white shadow-lg border-0">
-      <CardContent className="py-6">
-        <div className="space-y-4">
+      <CardContent className="py-3">
+        <div className="space-y-2">
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Navigate to Any Week</h3>
-            <p className="text-sm text-gray-600">Drag the slider to jump to any week of the year</p>
+            <h3 className="text-sm font-semibold text-gray-800 mb-1">Navigate to Any Week</h3>
+            <p className="text-xs text-gray-600">Drag the slider to jump to any week of the year</p>
           </div>
           
           <div className="px-4">
@@ -35,7 +35,7 @@ export function WeekSlider({ currentDate, onWeekChange }: WeekSliderProps) {
               className="w-full"
             />
             
-            <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>Week 1</span>
               <span>Week 26</span>
               <span>Week 53</span>

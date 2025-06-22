@@ -25,16 +25,16 @@ export function DayCard({ day, workouts, onAddWorkout, onEditWorkout, onDeleteWo
           : 'bg-white border-gray-300'
       } shadow-lg hover:shadow-xl transition-all duration-300 border-2`}
     >
-      <CardContent className="p-3 h-full flex flex-col">
+      <CardContent className="p-2 h-full flex flex-col min-h-0">
         {/* Compact Date Header */}
-        <div className={`text-center font-bold mb-3 ${
+        <div className={`text-center font-bold mb-2 flex-shrink-0 ${
           isToday ? 'text-blue-700' : 'text-gray-900'
         }`}>
           <div className="space-y-1">
             <div className="text-xs text-gray-600 uppercase tracking-wide font-semibold">
               {format(day, 'EEE')}
             </div>
-            <div className="text-2xl font-bold">
+            <div className="text-xl font-bold">
               {format(day, 'd')}
             </div>
             <div className="text-xs text-gray-700 font-medium md:hidden">
@@ -44,7 +44,7 @@ export function DayCard({ day, workouts, onAddWorkout, onEditWorkout, onDeleteWo
         </div>
         
         {/* Workouts List - Scrollable */}
-        <div className="flex-1 space-y-2 overflow-y-auto min-h-0">
+        <div className="flex-1 space-y-1 overflow-y-auto min-h-0">
           {workouts.map((workout) => (
             <WorkoutItem
               key={workout.id}
@@ -56,15 +56,15 @@ export function DayCard({ day, workouts, onAddWorkout, onEditWorkout, onDeleteWo
         </div>
         
         {/* Compact Add Button */}
-        <div className="flex justify-center pt-2 mt-auto">
+        <div className="flex justify-center pt-1 mt-auto flex-shrink-0">
           <Button
             size="sm"
             variant="outline"
-            className="h-8 w-8 p-0 rounded-full border-2 border-dashed border-gray-500 
+            className="h-6 w-6 p-0 rounded-full border-2 border-dashed border-gray-500 
               hover:border-gray-700 hover:bg-gray-100 transition-all duration-200"
             onClick={() => onAddWorkout(day)}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3 w-3" />
           </Button>
         </div>
       </CardContent>

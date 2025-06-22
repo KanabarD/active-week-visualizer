@@ -104,13 +104,17 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   return (
-    <div className="space-y-4">
-      <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
+    <div className="h-full flex flex-col space-y-2 overflow-hidden">
+      <div className="flex-shrink-0">
+        <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
+      </div>
       
-      <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
+      <div className="flex-shrink-0">
+        <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
+      </div>
 
-      {/* Calendar Grid - 7 columns for all days */}
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-2 h-[calc(100vh-400px)] min-h-[500px]">
+      {/* Calendar Grid - Fixed height to fit remaining space */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-7 gap-2 min-h-0 overflow-hidden">
         {days.map((day, index) => {
           const dayWorkouts = getWorkoutsForDate(day);
 
