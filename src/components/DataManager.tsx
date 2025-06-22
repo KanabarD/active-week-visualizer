@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Download, Upload, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
     // Try to use native filesystem first (for mobile/native apps)
     if (Capacitor.isNativePlatform()) {
       try {
-        console.log('📱 Using native filesystem to save backup...');
+        console.log('📱 Using native filesystem to save to Files folder...');
         
         await Filesystem.writeFile({
           path: fileName,
@@ -34,11 +35,11 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           encoding: Encoding.UTF8,
         });
         
-        console.log('✅ Successfully saved backup to device Documents folder');
+        console.log('✅ Successfully saved backup to Files folder');
         
         toast({
           title: "Backup Saved",
-          description: `Your workout data has been saved to Documents/${fileName}`,
+          description: `Your workout data has been saved to Files/${fileName}`,
         });
         return;
       } catch (error) {
@@ -193,7 +194,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
             <h3 className="font-semibold text-green-800 mb-2 text-base">Export Data</h3>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Save your workout data directly to your device or download for backup.
+              Save your workout data directly to your Files folder or download for backup.
             </p>
             <div className="space-y-3">
               <Button 
@@ -202,7 +203,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 disabled={workouts.length === 0}
               >
                 <Download className="h-5 w-5 mr-2" />
-                Save to Device
+                Save to Files
               </Button>
               <Button 
                 onClick={shareData}
