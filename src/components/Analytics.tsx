@@ -54,7 +54,8 @@ export function Analytics({ workouts }: AnalyticsProps) {
     }, {} as Record<string, number>);
 
     const weeklyChartData = Object.entries(weeklyData).map(([activity, duration]) => ({
-      activity,
+      activity: activity.length > 12 ? activity.substring(0, 12) + "..." : activity, // Truncate long names
+      fullActivity: activity, // Keep full name for tooltip
       duration: Math.round(duration),
       fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
     }));
@@ -135,12 +136,30 @@ export function Analytics({ workouts }: AnalyticsProps) {
             <CardTitle>Activity Duration (Minutes)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analyticsData.weeklyChartData}>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={analyticsData.weeklyChartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="activity" />
-                <YAxis />
-                <Tooltip />
+                <XAxis 
+                  dataKey="activity" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  fontSize={12}
+                  interval={0}
+                />
+                <YAxis fontSize={12} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                  formatter={(value, name, props) => [
+                    `${value} minutes`,
+                    props.payload?.fullActivity || name
+                  ]}
+                />
                 <Bar dataKey="duration" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
@@ -152,15 +171,23 @@ export function Analytics({ workouts }: AnalyticsProps) {
             <CardTitle>Activity Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
               <PieChart>
                 <Pie
                   data={analyticsData.pieData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percentage }) => `${name} (${percentage}%)`}
-                  outerRadius={80}
+                  label={({ name, percentage, value }) => {
+                    // Only show label if percentage is > 5% to avoid overcrowding
+                    if (parseFloat(percentage) > 5) {
+                      const shortName = name.length > 8 ? name.substring(0, 8) + "..." : name;
+                      return `${shortName} ${percentage}%`;
+                    }
+                    return "";
+                  }}
+                  outerRadius={100}
+                  fontSize={11}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -168,7 +195,18 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                  formatter={(value, name) => [
+                    `${value} minutes (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
+                    name
+                  ]}
+                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
