@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Copy } from "lucide-react";
+import { Copy, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,17 +12,31 @@ interface WorkoutFormProps {
   date: Date | null;
   isOpen: boolean;
   workouts: WorkoutEntry[];
+  editWorkout?: WorkoutEntry | null;
   onSubmit: (workout: Omit<WorkoutEntry, 'id' | 'date'>) => void;
+  onUpdate: (id: string, workout: Omit<WorkoutEntry, 'id' | 'date'>) => void;
   onClose: () => void;
 }
 
-export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: WorkoutFormProps) {
+export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onUpdate, onClose }: WorkoutFormProps) {
   const [activity, setActivity] = useState<WorkoutEntry['activity'] | ''>('');
   const [secondaryActivity, setSecondaryActivity] = useState<WorkoutEntry['secondaryActivity'] | ''>('');
   const [duration, setDuration] = useState('');
   const [secondaryDuration, setSecondaryDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<WorkoutEntry['exerciseType'] | ''>('');
   const [pplSplit, setPplSplit] = useState<WorkoutEntry['pplSplit'] | ''>('');
+
+  // Load edit workout data when editWorkout changes
+  useEffect(() => {
+    if (editWorkout) {
+      setActivity(editWorkout.activity);
+      setSecondaryActivity(editWorkout.secondaryActivity || '');
+      setDuration(editWorkout.duration.toString());
+      setSecondaryDuration(editWorkout.secondaryDuration ? editWorkout.secondaryDuration.toString() : '');
+      setExerciseType(editWorkout.exerciseType || '');
+      setPplSplit(editWorkout.pplSplit || '');
+    }
+  }, [editWorkout]);
 
   const getMostRecentWorkout = () => {
     if (workouts.length === 0) return null;
@@ -49,49 +63,62 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activity && duration) {
-      onSubmit({
+      const workoutData = {
         activity: activity as WorkoutEntry['activity'],
         secondaryActivity: secondaryActivity ? secondaryActivity as WorkoutEntry['secondaryActivity'] : undefined,
         duration: parseInt(duration),
         secondaryDuration: secondaryActivity && secondaryDuration ? parseInt(secondaryDuration) : undefined,
         exerciseType: activity === 'Resistance' && exerciseType ? exerciseType as WorkoutEntry['exerciseType'] : undefined,
         pplSplit: secondaryActivity === 'Resistance' && pplSplit ? pplSplit as WorkoutEntry['pplSplit'] : undefined,
-      });
+      };
+
+      if (editWorkout) {
+        onUpdate(editWorkout.id, workoutData);
+      } else {
+        onSubmit(workoutData);
+      }
+
       // Reset form
-      setActivity('');
-      setSecondaryActivity('');
-      setDuration('');
-      setSecondaryDuration('');
-      setExerciseType('');
-      setPplSplit('');
+      resetForm();
     }
   };
 
-  const handleClose = () => {
-    // Reset form on close
+  const resetForm = () => {
     setActivity('');
     setSecondaryActivity('');
     setDuration('');
     setSecondaryDuration('');
     setExerciseType('');
     setPplSplit('');
+  };
+
+  const handleClose = () => {
+    resetForm();
     onClose();
   };
 
-  if (!date) return null;
+  if (!date && !editWorkout) return null;
 
   const mostRecentWorkout = getMostRecentWorkout();
+  const isEditing = !!editWorkout;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Add Workout for {format(date, 'EEEE, MMMM d')}
+          <DialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
+            {isEditing ? (
+              <>
+                <Edit3 className="h-5 w-5 text-blue-600" />
+                Edit Workout
+              </>
+            ) : (
+              <>Add Workout for {date && format(date, 'EEEE, MMMM d')}</>
+            )}
           </DialogTitle>
         </DialogHeader>
         
-        {mostRecentWorkout && (
+        {!isEditing && mostRecentWorkout && (
           <div className="mb-4">
             <Button
               type="button"
@@ -235,7 +262,7 @@ export function WorkoutForm({ date, isOpen, workouts, onSubmit, onClose }: Worko
               className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold" 
               disabled={!activity || !duration || (activity === 'Resistance' && !exerciseType) || (secondaryActivity && !secondaryDuration) || (secondaryActivity === 'Resistance' && !pplSplit)}
             >
-              Add Workout
+              {isEditing ? 'Update Workout' : 'Add Workout'}
             </Button>
             <Button type="button" variant="outline" onClick={handleClose} className="border-gray-300 hover:bg-gray-50">
               Cancel

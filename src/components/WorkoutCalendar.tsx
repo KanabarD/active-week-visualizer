@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth } from "date-fns";
-import { Plus, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ interface WorkoutCalendarProps {
   workouts: WorkoutEntry[];
   onAddWorkout: (workout: Omit<WorkoutEntry, 'id'>) => void;
   onDeleteWorkout: (id: string) => void;
+  onUpdateWorkout: (id: string, workout: Omit<WorkoutEntry, 'id'>) => void;
 }
 
 const activityColors = {
@@ -25,9 +25,10 @@ const activityColors = {
   Swimming: "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg",
 };
 
-export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: WorkoutCalendarProps) {
+export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpdateWorkout }: WorkoutCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editWorkout, setEditWorkout] = useState<WorkoutEntry | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const monthStart = startOfMonth(currentDate);
@@ -50,6 +51,13 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
 
   const handleAddWorkout = (date: Date) => {
     setSelectedDate(date);
+    setEditWorkout(null);
+    setShowForm(true);
+  };
+
+  const handleEditWorkout = (workout: WorkoutEntry) => {
+    setEditWorkout(workout);
+    setSelectedDate(new Date(workout.date));
     setShowForm(true);
   };
 
@@ -64,9 +72,17 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
     }
   };
 
+  const handleFormUpdate = (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
+    onUpdateWorkout(id, workoutData);
+    setShowForm(false);
+    setSelectedDate(null);
+    setEditWorkout(null);
+  };
+
   const handleFormClose = () => {
     setShowForm(false);
     setSelectedDate(null);
+    setEditWorkout(null);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -172,6 +188,14 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
                         <Button
                           size="sm"
                           variant="ghost"
+                          className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-blue-500 rounded-full"
+                          onClick={() => handleEditWorkout(workout)}
+                        >
+                          <Edit3 className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-white hover:bg-red-500 rounded-full"
                           onClick={() => onDeleteWorkout(workout.id)}
                         >
@@ -203,7 +227,9 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
         date={selectedDate}
         isOpen={showForm}
         workouts={workouts}
+        editWorkout={editWorkout}
         onSubmit={handleFormSubmit}
+        onUpdate={handleFormUpdate}
         onClose={handleFormClose}
       />
     </div>

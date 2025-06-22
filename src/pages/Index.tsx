@@ -27,6 +27,14 @@ const Index = () => {
     setWorkouts(prev => [...prev, newWorkout]);
   };
 
+  const updateWorkout = (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
+    setWorkouts(prev => prev.map(workout => 
+      workout.id === id 
+        ? { ...workout, ...workoutData }
+        : workout
+    ));
+  };
+
   const deleteWorkout = (id: string) => {
     setWorkouts(prev => prev.filter(w => w.id !== id));
   };
@@ -63,6 +71,7 @@ const Index = () => {
               workouts={workouts} 
               onAddWorkout={addWorkout}
               onDeleteWorkout={deleteWorkout}
+              onUpdateWorkout={updateWorkout}
             />
           </TabsContent>
 
