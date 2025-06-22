@@ -21,17 +21,29 @@ const activityColors = {
 };
 
 export function WorkoutItem({ workout, onEdit, onDelete }: WorkoutItemProps) {
-  const formatWorkoutDisplay = (workout: WorkoutEntry) => {
-    let displayText = workout.activity === 'Other' && workout.customActivityName 
-      ? workout.customActivityName 
-      : workout.activity;
+  const formatActivityDisplay = (activity: string, customName?: string, exerciseType?: string, pplSplit?: string) => {
+    let displayText = activity === 'Other' && customName ? customName : activity;
     
-    if (workout.exerciseType) {
-      displayText += ` - ${workout.exerciseType}`;
+    if (exerciseType) {
+      displayText += ` - ${exerciseType}`;
+    } else if (pplSplit) {
+      displayText += ` - ${pplSplit}`;
     }
     
     return displayText;
   };
+
+  const formatDurationDisplay = (duration: number, secondaryDuration?: number) => {
+    if (secondaryDuration) {
+      return `${duration}+${secondaryDuration}min`;
+    }
+    return `${duration}min`;
+  };
+
+  const primaryActivity = formatActivityDisplay(workout.activity, workout.customActivityName, workout.exerciseType);
+  const secondaryActivity = workout.secondaryActivity 
+    ? formatActivityDisplay(workout.secondaryActivity, workout.customSecondaryActivityName, undefined, workout.pplSplit)
+    : null;
 
   return (
     <div className="group">
@@ -39,11 +51,22 @@ export function WorkoutItem({ workout, onEdit, onDelete }: WorkoutItemProps) {
         className={`p-2 rounded-lg border-2 ${activityColors[workout.activity]} 
           hover:shadow-md transition-all duration-200 cursor-pointer`}
       >
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-sm leading-tight">
-            {formatWorkoutDisplay(workout)}
-          </span>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="font-bold text-sm leading-tight truncate">
+              {primaryActivity}
+            </div>
+            {secondaryActivity && (
+              <div className="text-xs font-medium leading-tight mt-1 opacity-90 truncate">
+                + {secondaryActivity}
+              </div>
+            )}
+            <div className="text-xs font-semibold mt-1 opacity-90">
+              {formatDurationDisplay(workout.duration, workout.secondaryDuration)}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
             <Button
               size="sm"
               variant="ghost"
@@ -61,9 +84,6 @@ export function WorkoutItem({ workout, onEdit, onDelete }: WorkoutItemProps) {
               <Trash2 className="h-3 w-3" />
             </Button>
           </div>
-        </div>
-        <div className="text-xs font-semibold mt-1 opacity-90">
-          {workout.duration}min
         </div>
       </div>
     </div>
