@@ -1,11 +1,12 @@
-
 import { useState, useEffect } from "react";
-import { startOfWeek, addDays, isSameDay, startOfYear, addWeeks, subWeeks, getWeek } from "date-fns";
+import { addMonths, subMonths } from "date-fns";
 import { WorkoutForm } from "./WorkoutForm";
 import { WorkoutEntry } from "@/pages/Index";
-import { WeekNavigation } from "./calendar/WeekNavigation";
-import { WeekSlider } from "./calendar/WeekSlider";
-import { DayCard } from "./calendar/DayCard";
+import { MonthlyCalendar } from "./calendar/MonthlyCalendar";
+import { ListView } from "./calendar/ListView";
+import { Calendar, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface WorkoutCalendarProps {
   workouts: WorkoutEntry[];
@@ -19,6 +20,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   const [showForm, setShowForm] = useState(false);
   const [editWorkout, setEditWorkout] = useState<WorkoutEntry | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
 
   // Listen for jump to today events
   useEffect(() => {
@@ -29,23 +31,6 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
     window.addEventListener('jumpToToday', handleJumpToToday);
     return () => window.removeEventListener('jumpToToday', handleJumpToToday);
   }, []);
-
-  const getCalendarDays = () => {
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      days.push(addDays(weekStart, i));
-    }
-    return days;
-  };
-
-  const days = getCalendarDays();
-
-  const getWorkoutsForDate = (date: Date) => {
-    return workouts.filter(workout => 
-      isSameDay(new Date(workout.date), date)
-    );
-  };
 
   const handleAddWorkout = (date: Date) => {
     setSelectedDate(date);
@@ -89,50 +74,69 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   };
 
   const navigateTime = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentDate);
     if (direction === 'prev') {
-      setCurrentDate(subWeeks(newDate, 1));
+      setCurrentDate(subMonths(currentDate, 1));
     } else {
-      setCurrentDate(addWeeks(newDate, 1));
+      setCurrentDate(addMonths(currentDate, 1));
     }
-  };
-
-  const handleWeekChange = (weekNumber: number) => {
-    const currentYear = new Date().getFullYear();
-    const yearStart = startOfYear(new Date(currentYear, 0, 1));
-    const targetDate = addWeeks(yearStart, weekNumber - 1);
-    setCurrentDate(targetDate);
   };
 
   return (
     <div className="h-full flex flex-col space-y-3 overflow-hidden">
-      <div className="flex-shrink-0">
-        <WeekNavigation currentDate={currentDate} onNavigate={navigateTime} />
-      </div>
-      
-      <div className="flex-shrink-0">
-        <WeekSlider currentDate={currentDate} onWeekChange={handleWeekChange} />
-      </div>
-
-      {/* Calendar Grid - Optimized for Samsung A53 portrait mode */}
-      <div className="flex-1 overflow-y-auto px-1">
-        <div className="grid grid-cols-1 gap-3 pb-4">
-          {days.map((day, index) => {
-            const dayWorkouts = getWorkoutsForDate(day);
-
-            return (
-              <DayCard
-                key={index}
-                day={day}
-                workouts={dayWorkouts}
-                onAddWorkout={handleAddWorkout}
-                onEditWorkout={handleEditWorkout}
-                onDeleteWorkout={onDeleteWorkout}
-              />
-            );
-          })}
+      {/* View Toggle */}
+      <div className="flex-shrink-0 bg-white/90 rounded-lg border-2 border-lime-300 p-1">
+        <div className="grid grid-cols-2 gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode('calendar')}
+            className={cn(
+              "flex items-center space-x-2 h-10 transition-all duration-200",
+              viewMode === 'calendar' 
+                ? "bg-gradient-to-r from-lime-400 to-green-500 text-black shadow-sm" 
+                : "hover:bg-lime-100"
+            )}
+          >
+            <Calendar className="h-4 w-4" />
+            <span className="text-sm font-medium">Calendar</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode('list')}
+            className={cn(
+              "flex items-center space-x-2 h-10 transition-all duration-200",
+              viewMode === 'list' 
+                ? "bg-gradient-to-r from-green-400 to-emerald-500 text-black shadow-sm" 
+                : "hover:bg-lime-100"
+            )}
+          >
+            <List className="h-4 w-4" />
+            <span className="text-sm font-medium">List</span>
+          </Button>
         </div>
       </div>
+
+      {/* Calendar or List View */}
+      {viewMode === 'calendar' ? (
+        <MonthlyCalendar
+          currentDate={currentDate}
+          workouts={workouts}
+          onNavigate={navigateTime}
+          onAddWorkout={handleAddWorkout}
+          onEditWorkout={handleEditWorkout}
+          onDeleteWorkout={onDeleteWorkout}
+        />
+      ) : (
+        <ListView
+          currentDate={currentDate}
+          workouts={workouts}
+          onNavigate={navigateTime}
+          onAddWorkout={handleAddWorkout}
+          onEditWorkout={handleEditWorkout}
+          onDeleteWorkout={onDeleteWorkout}
+        />
+      )}
 
       <WorkoutForm
         date={selectedDate}
