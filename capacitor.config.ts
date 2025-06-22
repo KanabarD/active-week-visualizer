@@ -25,12 +25,19 @@ const config: CapacitorConfig = {
     StatusBar: {
       style: "light",
       backgroundColor: "#65a30d"
+    },
+    Filesystem: {
+      requestPermissions: true
     }
   },
   android: {
     allowMixedContent: true,
     captureInput: true,
-    webContentsDebuggingEnabled: false
+    webContentsDebuggingEnabled: false,
+    permissions: [
+      'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.READ_EXTERNAL_STORAGE'
+    ]
   }
 };
 

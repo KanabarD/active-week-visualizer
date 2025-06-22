@@ -18,6 +18,39 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
+  const requestStoragePermissions = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return true;
+    }
+
+    try {
+      console.log('📱 Requesting storage permissions...');
+      const permissions = await Filesystem.requestPermissions();
+      console.log('🔐 Permission status:', permissions);
+      
+      if (permissions.publicStorage === 'granted') {
+        console.log('✅ Storage permissions granted');
+        return true;
+      } else {
+        console.log('❌ Storage permissions denied');
+        toast({
+          title: "Permission Required",
+          description: "Storage permission is needed to save files. Please enable it in your device settings.",
+          variant: "destructive",
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Error requesting permissions:', error);
+      toast({
+        title: "Permission Error",
+        description: "Could not request storage permissions. Please check your device settings.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const exportData = async () => {
     const dataStr = JSON.stringify(workouts, null, 2);
     const fileName = `workout-data-${new Date().toISOString().split('T')[0]}.json`;
@@ -58,8 +91,14 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
     
     // Try to use native filesystem for mobile/native apps
     if (Capacitor.isNativePlatform()) {
+      // Request permissions first
+      const hasPermission = await requestStoragePermissions();
+      if (!hasPermission) {
+        return;
+      }
+
       try {
-        console.log('📱 Using native filesystem to save to Files folder...');
+        console.log('📱 Using native filesystem to save to Downloads folder...');
         
         await Filesystem.writeFile({
           path: fileName,
@@ -68,15 +107,20 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           encoding: Encoding.UTF8,
         });
         
-        console.log('✅ Successfully saved backup to Files folder');
+        console.log('✅ Successfully saved backup to Documents folder');
         
         toast({
           title: "Backup Saved",
-          description: `Your workout data has been saved to Files/${fileName}`,
+          description: `Your workout data has been saved to Documents/${fileName}`,
         });
         return;
       } catch (error) {
         console.error('❌ Failed to save with native filesystem:', error);
+        toast({
+          title: "Save Failed",
+          description: "Could not save to device storage. Please try the share option instead.",
+          variant: "destructive",
+        });
         // Fall back to web download method
       }
     }
@@ -227,7 +271,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
           <div className="bg-white/80 p-4 rounded-xl border border-lime-100 shadow-sm">
             <h3 className="font-semibold text-green-800 mb-2 text-base">Export Data</h3>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Choose where to save your workout data backup file.
+              Save your workout data backup file. On Android, you'll be asked for storage permission.
             </p>
             <div className="space-y-3">
               <Button 
