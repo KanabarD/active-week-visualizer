@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -99,5 +100,51 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Android Samsung A53 optimizations */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  /* Improve touch targets for mobile */
+  button, [role="button"], input, select, textarea {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Optimize scrolling for Android */
+  * {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+
+  /* Improve performance for animations */
+  * {
+    will-change: auto;
+  }
+
+  .animate-in, .animate-out {
+    will-change: transform, opacity;
+  }
+}
+
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }

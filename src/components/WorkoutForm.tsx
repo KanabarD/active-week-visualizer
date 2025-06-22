@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Copy, Edit3, ChevronLeft, ChevronRight } from "lucide-react";
@@ -35,6 +36,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
     }
   }, [editWorkout]);
 
+  // Memoize sorted workouts for better performance
   const getSortedWorkouts = () => {
     if (workouts.length === 0) return [];
     
@@ -115,16 +117,16 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-200">
+      <DialogContent className="max-w-sm mx-4 bg-gradient-to-br from-lime-50 to-green-50 border-2 border-lime-200 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl font-bold bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
+          <DialogTitle className="text-center text-lg font-bold bg-gradient-to-r from-lime-500 to-green-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
             {isEditing ? (
               <>
-                <Edit3 className="h-5 w-5 text-green-600" />
+                <Edit3 className="h-4 w-4 text-green-600" />
                 Edit Workout
               </>
             ) : (
-              <>Add Workout for {date && format(date, 'EEEE, MMMM d')}</>
+              <>Add Workout for {date && format(date, 'EEE, MMM d')}</>
             )}
           </DialogTitle>
         </DialogHeader>
@@ -138,13 +140,15 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
                 size="sm"
                 onClick={() => navigateWorkout('prev')}
                 disabled={selectedWorkoutIndex >= sortedWorkouts.length - 1}
-                className="px-2 border-lime-300 hover:bg-lime-50"
+                className="px-3 py-2 min-h-[44px] border-lime-300 hover:bg-lime-50 touch-manipulation"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               
-              <div className="flex-1 text-center text-sm text-gray-600">
-                {selectedWorkout ? formatWorkoutDisplay(selectedWorkout) : 'No workouts'}
+              <div className="flex-1 text-center text-sm text-gray-600 min-h-[44px] flex flex-col justify-center">
+                <div className="font-medium">
+                  {selectedWorkout ? formatWorkoutDisplay(selectedWorkout) : 'No workouts'}
+                </div>
                 <div className="text-xs text-gray-400">
                   {selectedWorkout && format(new Date(selectedWorkout.date), 'MMM d')} 
                   {sortedWorkouts.length > 1 && ` (${selectedWorkoutIndex + 1} of ${sortedWorkouts.length})`}
@@ -157,7 +161,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
                 size="sm"
                 onClick={() => navigateWorkout('next')}
                 disabled={selectedWorkoutIndex <= 0}
-                className="px-2 border-lime-300 hover:bg-lime-50"
+                className="px-3 py-2 min-h-[44px] border-lime-300 hover:bg-lime-50 touch-manipulation"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -167,7 +171,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
               type="button"
               variant="outline"
               onClick={copySelectedWorkout}
-              className="w-full bg-gradient-to-r from-lime-50 to-green-50 border-lime-200 hover:bg-gradient-to-r hover:from-lime-100 hover:to-green-100"
+              className="w-full min-h-[48px] bg-gradient-to-r from-lime-50 to-green-50 border-lime-200 hover:bg-gradient-to-r hover:from-lime-100 hover:to-green-100 touch-manipulation"
               disabled={!selectedWorkout}
             >
               <Copy className="h-4 w-4 mr-2" />
@@ -188,18 +192,18 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
                 setCustomActivityName('');
               }
             }}>
-              <SelectTrigger className="mt-1 border-lime-200 focus:border-lime-400">
+              <SelectTrigger className="mt-1 min-h-[48px] border-lime-200 focus:border-lime-400 touch-manipulation">
                 <SelectValue placeholder="Select activity" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-lime-200">
-                <SelectItem value="Brazilian Jiu-Jitsu">Brazilian Jiu-Jitsu</SelectItem>
-                <SelectItem value="Cycling">Cycling</SelectItem>
-                <SelectItem value="Hiking">Hiking</SelectItem>
-                <SelectItem value="Kickboxing">Kickboxing</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-                <SelectItem value="Resistance">Resistance Training</SelectItem>
-                <SelectItem value="Running">Running</SelectItem>
-                <SelectItem value="Swimming">Swimming</SelectItem>
+                <SelectItem value="Brazilian Jiu-Jitsu" className="min-h-[48px] touch-manipulation">Brazilian Jiu-Jitsu</SelectItem>
+                <SelectItem value="Cycling" className="min-h-[48px] touch-manipulation">Cycling</SelectItem>
+                <SelectItem value="Hiking" className="min-h-[48px] touch-manipulation">Hiking</SelectItem>
+                <SelectItem value="Kickboxing" className="min-h-[48px] touch-manipulation">Kickboxing</SelectItem>
+                <SelectItem value="Other" className="min-h-[48px] touch-manipulation">Other</SelectItem>
+                <SelectItem value="Resistance" className="min-h-[48px] touch-manipulation">Resistance Training</SelectItem>
+                <SelectItem value="Running" className="min-h-[48px] touch-manipulation">Running</SelectItem>
+                <SelectItem value="Swimming" className="min-h-[48px] touch-manipulation">Swimming</SelectItem>
               </SelectContent>
             </Select>
             
@@ -211,7 +215,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
                   value={customActivityName}
                   onChange={(e) => setCustomActivityName(e.target.value)}
                   placeholder="Enter activity name"
-                  className="mt-1 border-lime-200 focus:border-lime-400"
+                  className="mt-1 min-h-[48px] border-lime-200 focus:border-lime-400 touch-manipulation"
                 />
               </div>
             )}
@@ -222,11 +226,13 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
             <Input
               id="duration"
               type="number"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               placeholder="60"
               min="1"
-              className="mt-1 border-lime-200 focus:border-lime-400"
+              className="mt-1 min-h-[48px] border-lime-200 focus:border-lime-400 touch-manipulation"
             />
           </div>
 
@@ -234,13 +240,13 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
             <div className="bg-lime-50 p-4 rounded-lg border border-lime-200">
               <Label htmlFor="exerciseType" className="text-sm font-semibold text-green-800">PPL Split</Label>
               <Select value={exerciseType} onValueChange={(value) => setExerciseType(value as WorkoutEntry['exerciseType'])}>
-                <SelectTrigger className="mt-1 border-lime-200 focus:border-lime-400">
+                <SelectTrigger className="mt-1 min-h-[48px] border-lime-200 focus:border-lime-400 touch-manipulation">
                   <SelectValue placeholder="Select PPL split" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-lime-200">
-                  <SelectItem value="Push">Push</SelectItem>
-                  <SelectItem value="Pull">Pull</SelectItem>
-                  <SelectItem value="Legs">Legs</SelectItem>
+                  <SelectItem value="Push" className="min-h-[48px] touch-manipulation">Push</SelectItem>
+                  <SelectItem value="Pull" className="min-h-[48px] touch-manipulation">Pull</SelectItem>
+                  <SelectItem value="Legs" className="min-h-[48px] touch-manipulation">Legs</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -249,7 +255,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
           <div className="flex gap-2 pt-2">
             <Button 
               type="submit" 
-              className="flex-1 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white font-semibold" 
+              className="flex-1 min-h-[48px] bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white font-semibold touch-manipulation" 
               disabled={
                 !activity || !duration || 
                 (activity === 'Resistance' && !exerciseType) || 
@@ -258,7 +264,12 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
             >
               {isEditing ? 'Update Workout' : 'Add Workout'}
             </Button>
-            <Button type="button" variant="outline" onClick={handleClose} className="border-lime-300 hover:bg-lime-50">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleClose} 
+              className="min-h-[48px] border-lime-300 hover:bg-lime-50 touch-manipulation"
+            >
               Cancel
             </Button>
           </div>
