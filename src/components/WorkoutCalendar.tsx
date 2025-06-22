@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth } from "date-fns";
 import { Plus, Trash2, ChevronLeft, ChevronRight, Edit3 } from "lucide-react";
@@ -188,13 +189,14 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                 
                 {dayWorkouts.map((workout) => (
                   <div key={workout.id} className="group relative">
-                    <Badge 
-                      className={`w-full justify-between text-xs font-semibold ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer`}
+                    <div 
+                      className={`w-full flex justify-between text-xs font-semibold rounded-full px-2 py-1 ${activityColors[workout.activity]} hover:scale-105 transition-transform cursor-pointer min-h-[24px]`}
+                      title={formatWorkoutDisplay(workout)}
                     >
-                      <span className="truncate text-left">
+                      <span className="flex-1 text-left text-wrap break-words leading-tight">
                         {formatWorkoutDisplay(workout)}
                       </span>
-                      <div className="flex items-center gap-1 ml-2">
+                      <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                         <Button
                           size="sm"
                           variant="ghost"
@@ -212,7 +214,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
-                    </Badge>
+                    </div>
                   </div>
                 ))}
                 
