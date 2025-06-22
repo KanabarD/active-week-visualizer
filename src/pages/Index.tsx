@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
 import { Reports } from "@/components/Reports";
@@ -25,24 +24,23 @@ const Index = () => {
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load workouts from Capacitor native storage on app start
+  // Load workouts from localStorage on app start
   useEffect(() => {
-    const loadWorkouts = async () => {
+    const loadWorkouts = () => {
       try {
-        console.log('🔄 Loading workouts from native storage...');
+        console.log('🔄 Loading workouts from localStorage...');
         
-        // Clear any existing data first to test fresh load
-        const { value } = await Preferences.get({ key: STORAGE_KEY });
-        console.log('📁 Raw storage value:', value);
+        const storedValue = localStorage.getItem(STORAGE_KEY);
+        console.log('📁 Raw storage value:', storedValue);
         
-        if (value && value !== 'null' && value !== 'undefined') {
+        if (storedValue && storedValue !== 'null' && storedValue !== 'undefined') {
           try {
-            const parsedWorkouts = JSON.parse(value);
+            const parsedWorkouts = JSON.parse(storedValue);
             console.log('✅ Parsed workouts:', parsedWorkouts);
             
             if (Array.isArray(parsedWorkouts) && parsedWorkouts.length > 0) {
               setWorkouts(parsedWorkouts);
-              console.log(`✅ Successfully loaded ${parsedWorkouts.length} workouts from native storage`);
+              console.log(`✅ Successfully loaded ${parsedWorkouts.length} workouts from localStorage`);
             } else {
               console.log('📭 Storage contains empty or invalid workout array');
               setWorkouts([]);
@@ -50,7 +48,7 @@ const Index = () => {
           } catch (parseError) {
             console.error('❌ Error parsing stored data:', parseError);
             console.log('🗑️ Clearing corrupted storage data');
-            await Preferences.remove({ key: STORAGE_KEY });
+            localStorage.removeItem(STORAGE_KEY);
             setWorkouts([]);
           }
         } else {
@@ -58,7 +56,7 @@ const Index = () => {
           setWorkouts([]);
         }
       } catch (error) {
-        console.error('❌ Error loading workouts from native storage:', error);
+        console.error('❌ Error loading workouts from localStorage:', error);
         setWorkouts([]);
       } finally {
         setIsLoading(false);
@@ -69,29 +67,26 @@ const Index = () => {
     loadWorkouts();
   }, []);
 
-  // Save workouts to Capacitor native storage whenever workouts change
+  // Save workouts to localStorage whenever workouts change
   useEffect(() => {
-    const saveWorkouts = async () => {
+    const saveWorkouts = () => {
       if (isLoading) {
         console.log('⏳ Skipping save during initial load');
         return;
       }
 
       try {
-        console.log(`💾 Saving ${workouts.length} workouts to native storage...`);
+        console.log(`💾 Saving ${workouts.length} workouts to localStorage...`);
         console.log('📊 Workout data being saved:', workouts);
         
         const dataToSave = JSON.stringify(workouts);
         console.log('📝 Serialized data length:', dataToSave.length);
         
-        await Preferences.set({
-          key: STORAGE_KEY,
-          value: dataToSave,
-        });
-        console.log('✅ Successfully saved workouts to native storage');
+        localStorage.setItem(STORAGE_KEY, dataToSave);
+        console.log('✅ Successfully saved workouts to localStorage');
         
         // Immediate verification
-        const { value: verifyValue } = await Preferences.get({ key: STORAGE_KEY });
+        const verifyValue = localStorage.getItem(STORAGE_KEY);
         if (verifyValue) {
           const savedWorkouts = JSON.parse(verifyValue);
           console.log(`✅ Verification: Storage contains ${savedWorkouts.length} workouts`);
@@ -103,20 +98,13 @@ const Index = () => {
           console.error('❌ Verification failed: No data found after save!');
         }
         
-        // Additional verification - list all Preferences keys
-        const { keys } = await Preferences.keys();
-        console.log('🔑 All storage keys:', keys);
-        
       } catch (error) {
-        console.error('❌ Error saving workouts to native storage:', error);
+        console.error('❌ Error saving workouts to localStorage:', error);
         
         // Try to save again with a backup key
         try {
           console.log('🔄 Attempting backup save...');
-          await Preferences.set({
-            key: `${STORAGE_KEY}-backup`,
-            value: JSON.stringify(workouts),
-          });
+          localStorage.setItem(`${STORAGE_KEY}-backup`, JSON.stringify(workouts));
           console.log('✅ Backup save successful');
         } catch (backupError) {
           console.error('❌ Backup save also failed:', backupError);
@@ -129,7 +117,7 @@ const Index = () => {
     return () => clearTimeout(timeoutId);
   }, [workouts, isLoading]);
 
-  const addWorkout = async (workout: Omit<WorkoutEntry, 'id'>) => {
+  const addWorkout = (workout: Omit<WorkoutEntry, 'id'>) => {
     const newWorkout: WorkoutEntry = {
       ...workout,
       id: Date.now().toString(),
@@ -143,7 +131,7 @@ const Index = () => {
     });
   };
 
-  const updateWorkout = async (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
+  const updateWorkout = (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
     console.log('✏️ Updating workout:', id, workoutData);
     setWorkouts(prev => {
       const updated = prev.map(workout => 
@@ -156,7 +144,7 @@ const Index = () => {
     });
   };
 
-  const deleteWorkout = async (id: string) => {
+  const deleteWorkout = (id: string) => {
     console.log('🗑️ Deleting workout:', id);
     setWorkouts(prev => {
       const updated = prev.filter(w => w.id !== id);
@@ -165,22 +153,20 @@ const Index = () => {
     });
   };
 
-  const handleImportData = async (importedWorkouts: WorkoutEntry[]) => {
+  const handleImportData = (importedWorkouts: WorkoutEntry[]) => {
     console.log('📥 Importing workouts:', importedWorkouts.length);
     setWorkouts(importedWorkouts);
   };
 
   // Debug function to check storage state
-  const checkStorageState = async () => {
+  const checkStorageState = () => {
     try {
-      const { value } = await Preferences.get({ key: STORAGE_KEY });
-      const { keys } = await Preferences.keys();
+      const storedValue = localStorage.getItem(STORAGE_KEY);
       console.log('🔍 Current storage state check:');
-      console.log('📊 Keys:', keys);
-      console.log('📁 Main data:', value);
+      console.log('📁 Main data:', storedValue);
       
-      if (value) {
-        const parsed = JSON.parse(value);
+      if (storedValue) {
+        const parsed = JSON.parse(storedValue);
         console.log(`📈 Parsed workout count: ${parsed.length}`);
       }
     } catch (error) {
@@ -199,7 +185,7 @@ const Index = () => {
       <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-lg font-semibold text-green-700">Loading your workouts...</div>
-          <div className="text-sm text-gray-600 mt-2">Checking device storage...</div>
+          <div className="text-sm text-gray-600 mt-2">Checking local storage...</div>
         </div>
       </div>
     );
