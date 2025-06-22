@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import { format, startOfWeek, startOfMonth, startOfYear, endOfWeek, endOfMonth, endOfYear, isWithinInterval } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,37 +90,38 @@ export function Reports({ workouts, onImportData }: ReportsProps) {
 
   const ReportCard = ({ title, report }: { title: string; report: any }) => (
     <Card className="bg-white border border-gray-200 shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          <span className="text-gray-800">{title}</span>
-          <Badge variant="outline" className="border-gray-300 text-gray-600 bg-gray-50">{report.period}</Badge>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex flex-col space-y-2 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
+          <span className="text-gray-800 text-lg">{title}</span>
+          <Badge variant="outline" className="border-gray-300 text-gray-600 bg-gray-50 text-xs self-start sm:self-auto">{report.period}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-700">{report.totalWorkouts}</div>
-            <div className="text-sm text-gray-600">Workouts</div>
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="bg-gray-50 p-2 rounded-lg border border-gray-200">
+            <div className="text-lg font-bold text-gray-700">{report.totalWorkouts}</div>
+            <div className="text-xs text-gray-600">Workouts</div>
           </div>
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-700">{formatDuration(report.totalDuration)}</div>
-            <div className="text-sm text-gray-600">Total Time</div>
+          <div className="bg-gray-50 p-2 rounded-lg border border-gray-200">
+            <div className="text-lg font-bold text-gray-700">{formatDuration(report.totalDuration)}</div>
+            <div className="text-xs text-gray-600">Total Time</div>
           </div>
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-gray-700">{formatDuration(report.averageDuration)}</div>
-            <div className="text-sm text-gray-600">Avg Duration</div>
+          <div className="bg-gray-50 p-2 rounded-lg border border-gray-200">
+            <div className="text-lg font-bold text-gray-700">{formatDuration(report.averageDuration)}</div>
+            <div className="text-xs text-gray-600">Avg Duration</div>
           </div>
         </div>
 
         {Object.keys(report.activityStats).length > 0 && (
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h4 className="font-semibold mb-2 text-gray-700">Activity Breakdown</h4>
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <h4 className="font-semibold mb-2 text-gray-700 text-sm">Activity Breakdown</h4>
             <div className="space-y-2">
               {Object.entries(report.activityStats).map(([activity, stats]: [string, any]) => (
                 <div key={activity} className="flex justify-between items-center p-2 bg-white rounded border border-gray-200">
-                  <span className="font-medium text-gray-700">{activity}</span>
-                  <div className="text-sm text-gray-600">
-                    {stats.count} sessions • {formatDuration(stats.duration)}
+                  <span className="font-medium text-gray-700 text-sm truncate pr-2">{activity}</span>
+                  <div className="text-xs text-gray-600 text-right flex-shrink-0">
+                    <div>{stats.count} sessions</div>
+                    <div>{formatDuration(stats.duration)}</div>
                   </div>
                 </div>
               ))}
@@ -131,7 +133,7 @@ export function Reports({ workouts, onImportData }: ReportsProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 px-1">
       <ReportCard title="Weekly Report" report={reports.weekly} />
       <ReportCard title="Monthly Report" report={reports.monthly} />
       <ReportCard title="Yearly Report" report={reports.yearly} />

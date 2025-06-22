@@ -91,71 +91,71 @@ export function Analytics({ workouts }: AnalyticsProps) {
   }, [workouts]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 px-1">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Workouts</CardTitle>
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="p-3">
+          <CardHeader className="pb-1 px-0 pt-0">
+            <CardTitle className="text-xs font-medium text-gray-600">Total Workouts</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{analyticsData.totalWorkouts}</div>
+          <CardContent className="px-0 pb-0">
+            <div className="text-xl font-bold text-blue-600">{analyticsData.totalWorkouts}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Duration</CardTitle>
+        <Card className="p-3">
+          <CardHeader className="pb-1 px-0 pt-0">
+            <CardTitle className="text-xs font-medium text-gray-600">Total Duration</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatDuration(analyticsData.totalDuration)}</div>
+          <CardContent className="px-0 pb-0">
+            <div className="text-xl font-bold text-green-600">{formatDuration(analyticsData.totalDuration)}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Average Duration</CardTitle>
+        <Card className="p-3">
+          <CardHeader className="pb-1 px-0 pt-0">
+            <CardTitle className="text-xs font-medium text-gray-600">Average Duration</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{formatDuration(analyticsData.averageDuration)}</div>
+          <CardContent className="px-0 pb-0">
+            <div className="text-xl font-bold text-purple-600">{formatDuration(analyticsData.averageDuration)}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Most Active</CardTitle>
+        <Card className="p-3">
+          <CardHeader className="pb-1 px-0 pt-0">
+            <CardTitle className="text-xs font-medium text-gray-600">Most Active</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-orange-600">{analyticsData.mostActiveActivity.activity}</div>
+          <CardContent className="px-0 pb-0">
+            <div className="text-sm font-bold text-orange-600 leading-tight">{analyticsData.mostActiveActivity.activity}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Activity Duration</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Activity Duration</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={analyticsData.weeklyChartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+          <CardContent className="px-2">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={analyticsData.weeklyChartData} margin={{ top: 10, right: 10, left: 0, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="activity" 
                   angle={-45}
                   textAnchor="end"
-                  height={80}
-                  fontSize={12}
+                  height={70}
+                  fontSize={10}
                   interval={0}
                 />
-                <YAxis fontSize={12} />
+                <YAxis fontSize={10} width={40} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
                     border: '1px solid #ccc',
                     borderRadius: '8px',
-                    fontSize: '14px'
+                    fontSize: '12px'
                   }}
                   formatter={(value, name, props) => [
                     props.payload?.durationFormatted || formatDuration(Number(value)),
@@ -169,11 +169,11 @@ export function Analytics({ workouts }: AnalyticsProps) {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Activity Distribution</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Activity Distribution</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+          <CardContent className="px-2">
+            <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
                   data={analyticsData.pieData}
@@ -181,15 +181,15 @@ export function Analytics({ workouts }: AnalyticsProps) {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percentage, valueFormatted }) => {
-                    // Only show label if percentage is > 5% to avoid overcrowding
-                    if (parseFloat(percentage) > 5) {
-                      const shortName = name.length > 8 ? name.substring(0, 8) + "..." : name;
+                    // Only show label if percentage is > 8% to avoid overcrowding on small screens
+                    if (parseFloat(percentage) > 8) {
+                      const shortName = name.length > 6 ? name.substring(0, 6) + "..." : name;
                       return `${shortName} ${percentage}%`;
                     }
                     return "";
                   }}
-                  outerRadius={100}
-                  fontSize={11}
+                  outerRadius={85}
+                  fontSize={9}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -202,7 +202,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     backgroundColor: 'white', 
                     border: '1px solid #ccc',
                     borderRadius: '8px',
-                    fontSize: '14px'
+                    fontSize: '12px'
                   }}
                   formatter={(value, name) => [
                     `${analyticsData.pieData.find(d => d.name === name)?.valueFormatted || formatDuration(Number(value))} (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
