@@ -1,6 +1,6 @@
 
 import { format, startOfWeek, endOfWeek, getWeek, startOfYear } from "date-fns";
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Calendar } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +17,16 @@ export function WeekNavigation({ currentDate, onNavigate }: WeekNavigationProps)
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
     return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+  };
+
+  const jumpToToday = () => {
+    const today = new Date();
+    // We need to trigger a navigation to today's week
+    // Since we don't have direct access to setCurrentDate, we'll use the existing onNavigate
+    // But we need to modify the parent component to handle this
+    if (window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('jumpToToday'));
+    }
   };
 
   return (
@@ -47,6 +57,16 @@ export function WeekNavigation({ currentDate, onNavigate }: WeekNavigationProps)
             <div className="text-lg text-gray-600">
               Week {currentWeekNumber} of {currentYear}
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={jumpToToday}
+              className="h-10 px-4 border-2 border-blue-400 hover:border-blue-600 hover:bg-blue-50 text-blue-600 hover:text-blue-700 font-semibold"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Jump to Today
+            </Button>
           </div>
           
           <Button

@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { startOfWeek, addDays, isSameDay, startOfYear, addWeeks, subWeeks, getWeek } from "date-fns";
 import { WorkoutForm } from "./WorkoutForm";
 import { WorkoutEntry } from "@/pages/Index";
@@ -19,6 +18,16 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout, onUpd
   const [showForm, setShowForm] = useState(false);
   const [editWorkout, setEditWorkout] = useState<WorkoutEntry | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Listen for jump to today events
+  useEffect(() => {
+    const handleJumpToToday = () => {
+      setCurrentDate(new Date());
+    };
+
+    window.addEventListener('jumpToToday', handleJumpToToday);
+    return () => window.removeEventListener('jumpToToday', handleJumpToToday);
+  }, []);
 
   const getCalendarDays = () => {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
