@@ -14,6 +14,7 @@ export interface WorkoutEntry {
   duration: number; // in minutes
   secondaryDuration?: number; // in minutes for secondary activity
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
+  secondaryExerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for secondary Resistance training
   notes?: string;
 }
 

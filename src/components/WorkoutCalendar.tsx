@@ -145,6 +145,7 @@ export function WorkoutCalendar({ workouts, onAddWorkout, onDeleteWorkout }: Wor
                         {workout.activity}
                         {workout.secondaryActivity && ` + ${workout.secondaryActivity}`}
                         {workout.exerciseType && ` - ${workout.exerciseType}`}
+                        {workout.secondaryExerciseType && ` / ${workout.secondaryExerciseType}`}
                       </span>
                       <div className="flex items-center gap-1">
                         <span>{workout.duration}m</span>
