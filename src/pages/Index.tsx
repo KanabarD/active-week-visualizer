@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
@@ -30,19 +31,40 @@ const Index = () => {
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
-        console.log('Loading workouts from native storage...');
+        console.log('🔄 Loading workouts from native storage...');
+        
+        // Clear any existing data first to test fresh load
         const { value } = await Preferences.get({ key: STORAGE_KEY });
-        if (value) {
-          const parsedWorkouts = JSON.parse(value);
-          setWorkouts(parsedWorkouts);
-          console.log('Successfully loaded workouts from native storage:', parsedWorkouts.length);
+        console.log('📁 Raw storage value:', value);
+        
+        if (value && value !== 'null' && value !== 'undefined') {
+          try {
+            const parsedWorkouts = JSON.parse(value);
+            console.log('✅ Parsed workouts:', parsedWorkouts);
+            
+            if (Array.isArray(parsedWorkouts) && parsedWorkouts.length > 0) {
+              setWorkouts(parsedWorkouts);
+              console.log(`✅ Successfully loaded ${parsedWorkouts.length} workouts from native storage`);
+            } else {
+              console.log('📭 Storage contains empty or invalid workout array');
+              setWorkouts([]);
+            }
+          } catch (parseError) {
+            console.error('❌ Error parsing stored data:', parseError);
+            console.log('🗑️ Clearing corrupted storage data');
+            await Preferences.remove({ key: STORAGE_KEY });
+            setWorkouts([]);
+          }
         } else {
-          console.log('No existing workout data found in storage');
+          console.log('📭 No existing workout data found in storage');
+          setWorkouts([]);
         }
       } catch (error) {
-        console.error('Error loading workouts from native storage:', error);
+        console.error('❌ Error loading workouts from native storage:', error);
+        setWorkouts([]);
       } finally {
         setIsLoading(false);
+        console.log('✅ Finished loading process');
       }
     };
 
@@ -53,30 +75,60 @@ const Index = () => {
   useEffect(() => {
     const saveWorkouts = async () => {
       if (isLoading) {
-        console.log('Skipping save during initial load');
+        console.log('⏳ Skipping save during initial load');
         return;
       }
 
       try {
-        console.log('Saving workouts to native storage:', workouts.length);
+        console.log(`💾 Saving ${workouts.length} workouts to native storage...`);
+        console.log('📊 Workout data being saved:', workouts);
+        
+        const dataToSave = JSON.stringify(workouts);
+        console.log('📝 Serialized data length:', dataToSave.length);
+        
         await Preferences.set({
           key: STORAGE_KEY,
-          value: JSON.stringify(workouts),
+          value: dataToSave,
         });
-        console.log('Successfully saved workouts to native storage');
+        console.log('✅ Successfully saved workouts to native storage');
         
-        // Verify the save by reading it back
-        const { value } = await Preferences.get({ key: STORAGE_KEY });
-        if (value) {
-          const savedWorkouts = JSON.parse(value);
-          console.log('Verification: Storage contains', savedWorkouts.length, 'workouts');
+        // Immediate verification
+        const { value: verifyValue } = await Preferences.get({ key: STORAGE_KEY });
+        if (verifyValue) {
+          const savedWorkouts = JSON.parse(verifyValue);
+          console.log(`✅ Verification: Storage contains ${savedWorkouts.length} workouts`);
+          
+          if (savedWorkouts.length !== workouts.length) {
+            console.warn('⚠️ Mismatch between saved and current workout count!');
+          }
+        } else {
+          console.error('❌ Verification failed: No data found after save!');
         }
+        
+        // Additional verification - list all Preferences keys
+        const { keys } = await Preferences.keys();
+        console.log('🔑 All storage keys:', keys);
+        
       } catch (error) {
-        console.error('Error saving workouts to native storage:', error);
+        console.error('❌ Error saving workouts to native storage:', error);
+        
+        // Try to save again with a backup key
+        try {
+          console.log('🔄 Attempting backup save...');
+          await Preferences.set({
+            key: `${STORAGE_KEY}-backup`,
+            value: JSON.stringify(workouts),
+          });
+          console.log('✅ Backup save successful');
+        } catch (backupError) {
+          console.error('❌ Backup save also failed:', backupError);
+        }
       }
     };
 
-    saveWorkouts();
+    // Add a small delay to ensure state updates are complete
+    const timeoutId = setTimeout(saveWorkouts, 100);
+    return () => clearTimeout(timeoutId);
   }, [workouts, isLoading]);
 
   const addWorkout = async (workout: Omit<WorkoutEntry, 'id'>) => {
@@ -84,42 +136,72 @@ const Index = () => {
       ...workout,
       id: Date.now().toString(),
     };
-    console.log('Adding new workout:', newWorkout);
+    console.log('➕ Adding new workout:', newWorkout);
+    
     setWorkouts(prev => {
       const updated = [...prev, newWorkout];
-      console.log('Updated workouts count:', updated.length);
+      console.log(`📈 Updated workouts count: ${prev.length} → ${updated.length}`);
       return updated;
     });
   };
 
   const updateWorkout = async (id: string, workoutData: Omit<WorkoutEntry, 'id' | 'date'>) => {
-    console.log('Updating workout:', id);
-    setWorkouts(prev => prev.map(workout => 
-      workout.id === id 
-        ? { ...workout, ...workoutData }
-        : workout
-    ));
+    console.log('✏️ Updating workout:', id, workoutData);
+    setWorkouts(prev => {
+      const updated = prev.map(workout => 
+        workout.id === id 
+          ? { ...workout, ...workoutData }
+          : workout
+      );
+      console.log('📝 Workout updated in state');
+      return updated;
+    });
   };
 
   const deleteWorkout = async (id: string) => {
-    console.log('Deleting workout:', id);
+    console.log('🗑️ Deleting workout:', id);
     setWorkouts(prev => {
       const updated = prev.filter(w => w.id !== id);
-      console.log('Updated workouts count after deletion:', updated.length);
+      console.log(`📉 Updated workouts count after deletion: ${prev.length} → ${updated.length}`);
       return updated;
     });
   };
 
   const handleImportData = async (importedWorkouts: WorkoutEntry[]) => {
-    console.log('Importing workouts:', importedWorkouts.length);
+    console.log('📥 Importing workouts:', importedWorkouts.length);
     setWorkouts(importedWorkouts);
   };
+
+  // Debug function to check storage state
+  const checkStorageState = async () => {
+    try {
+      const { value } = await Preferences.get({ key: STORAGE_KEY });
+      const { keys } = await Preferences.keys();
+      console.log('🔍 Current storage state check:');
+      console.log('📊 Keys:', keys);
+      console.log('📁 Main data:', value);
+      
+      if (value) {
+        const parsed = JSON.parse(value);
+        console.log(`📈 Parsed workout count: ${parsed.length}`);
+      }
+    } catch (error) {
+      console.error('❌ Error checking storage:', error);
+    }
+  };
+
+  // Check storage every 10 seconds for debugging
+  useEffect(() => {
+    const interval = setInterval(checkStorageState, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-lime-50 via-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-lg font-semibold text-green-700">Loading your workouts...</div>
+          <div className="text-sm text-gray-600 mt-2">Checking device storage...</div>
         </div>
       </div>
     );
