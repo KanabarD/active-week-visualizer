@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Download, Upload, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -171,7 +172,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
                 disabled={workouts.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Download
+                Backup Locally
               </Button>
               <Button 
                 onClick={shareData}
