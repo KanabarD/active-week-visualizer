@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { Preferences } from '@capacitor/preferences';
 import { WorkoutCalendar } from "@/components/WorkoutCalendar";
 import { Analytics } from "@/components/Analytics";
 import { Reports } from "@/components/Reports";
@@ -24,27 +25,41 @@ const STORAGE_KEY = 'workout-tracker-data';
 const Index = () => {
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
 
-  // Load workouts from localStorage on app start
+  // Load workouts from Capacitor native storage on app start
   useEffect(() => {
-    try {
-      const savedWorkouts = localStorage.getItem(STORAGE_KEY);
-      if (savedWorkouts) {
-        const parsedWorkouts = JSON.parse(savedWorkouts);
-        setWorkouts(parsedWorkouts);
-        console.log('Loaded workouts from storage:', parsedWorkouts.length);
+    const loadWorkouts = async () => {
+      try {
+        const { value } = await Preferences.get({ key: STORAGE_KEY });
+        if (value) {
+          const parsedWorkouts = JSON.parse(value);
+          setWorkouts(parsedWorkouts);
+          console.log('Loaded workouts from native storage:', parsedWorkouts.length);
+        }
+      } catch (error) {
+        console.error('Error loading workouts from native storage:', error);
       }
-    } catch (error) {
-      console.error('Error loading workouts from storage:', error);
-    }
+    };
+
+    loadWorkouts();
   }, []);
 
-  // Save workouts to localStorage whenever workouts change
+  // Save workouts to Capacitor native storage whenever workouts change
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
-      console.log('Saved workouts to storage:', workouts.length);
-    } catch (error) {
-      console.error('Error saving workouts to storage:', error);
+    const saveWorkouts = async () => {
+      try {
+        await Preferences.set({
+          key: STORAGE_KEY,
+          value: JSON.stringify(workouts),
+        });
+        console.log('Saved workouts to native storage:', workouts.length);
+      } catch (error) {
+        console.error('Error saving workouts to native storage:', error);
+      }
+    };
+
+    // Only save if we have workouts or if we're clearing them
+    if (workouts.length > 0 || workouts.length === 0) {
+      saveWorkouts();
     }
   }, [workouts]);
 
