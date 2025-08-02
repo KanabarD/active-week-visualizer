@@ -61,7 +61,7 @@ export function ListView({
       'Brazilian Jiu-Jitsu': 'bg-purple-500',
       'Cycling': 'bg-blue-500',
       'Hiking': 'bg-green-500',
-      'Kickboxing': 'bg-red-500',
+      'Muay Thai': 'bg-red-500',
       'Resistance': 'bg-orange-500',
       'Running': 'bg-yellow-500',
       'Swimming': 'bg-cyan-500',

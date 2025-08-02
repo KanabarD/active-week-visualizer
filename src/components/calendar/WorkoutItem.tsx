@@ -13,7 +13,7 @@ const activityColors = {
   "Brazilian Jiu-Jitsu": "bg-purple-500 text-white border-purple-600",
   Cycling: "bg-cyan-500 text-white border-cyan-600",
   Hiking: "bg-green-500 text-white border-green-600",
-  Kickboxing: "bg-red-500 text-white border-red-600",
+  "Muay Thai": "bg-red-500 text-white border-red-600",
   Other: "bg-gray-500 text-white border-gray-600",
   Resistance: "bg-orange-500 text-white border-orange-600",
   Running: "bg-emerald-500 text-white border-emerald-600",

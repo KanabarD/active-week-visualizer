@@ -11,7 +11,7 @@ const activityColors = {
   "Brazilian Jiu-Jitsu": "#8b5cf6",
   Cycling: "#06b6d4",
   Hiking: "#84cc16",
-  Kickboxing: "#ef4444",
+  "Muay Thai": "#ef4444",
   Resistance: "#f97316",
   Running: "#22c55e",
   Swimming: "#3b82f6",

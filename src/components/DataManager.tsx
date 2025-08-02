@@ -100,7 +100,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
 
               // Validate activity type
               const validActivities: WorkoutEntry['activity'][] = [
-                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Kickboxing', 
+                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Muay Thai', 
                 'Other', 'Resistance', 'Running', 'Swimming'
               ];
               
@@ -201,7 +201,7 @@ export function DataManager({ workouts, onImportData }: DataManagerProps) {
 
               // Validate activity type first
               const validActivities: WorkoutEntry['activity'][] = [
-                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Kickboxing', 
+                'Brazilian Jiu-Jitsu', 'Cycling', 'Hiking', 'Muay Thai', 
                 'Other', 'Resistance', 'Running', 'Swimming'
               ];
               
