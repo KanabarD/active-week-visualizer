@@ -198,7 +198,7 @@ export function WorkoutForm({ date, isOpen, workouts, editWorkout, onSubmit, onU
                 <SelectItem value="Brazilian Jiu-Jitsu" className="min-h-[48px] touch-manipulation">Brazilian Jiu-Jitsu</SelectItem>
                 <SelectItem value="Cycling" className="min-h-[48px] touch-manipulation">Cycling</SelectItem>
                 <SelectItem value="Hiking" className="min-h-[48px] touch-manipulation">Hiking</SelectItem>
-                <SelectItem value="Muay Thai" className="min-h-[48px] touch-manipulation">Muay Thai</SelectItem>
+                <SelectItem value="Kickboxing" className="min-h-[48px] touch-manipulation">Kickboxing</SelectItem>
                 <SelectItem value="Other" className="min-h-[48px] touch-manipulation">Other</SelectItem>
                 <SelectItem value="Resistance" className="min-h-[48px] touch-manipulation">Resistance Training</SelectItem>
                 <SelectItem value="Running" className="min-h-[48px] touch-manipulation">Running</SelectItem>

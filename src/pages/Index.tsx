@@ -8,8 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export interface WorkoutEntry {
   id: string;
   date: string;
-  activity: 'Brazilian Jiu-Jitsu' | 'Cycling' | 'Hiking' | 'Muay Thai' | 'Other' | 'Resistance' | 'Running' | 'Swimming';
-  secondaryActivity?: 'Brazilian Jiu-Jitsu' | 'Cycling' | 'Hiking' | 'Muay Thai' | 'Other' | 'Resistance' | 'Running' | 'Swimming';
+  activity: 'Brazilian Jiu-Jitsu' | 'Cycling' | 'Hiking' | 'Kickboxing' | 'Other' | 'Resistance' | 'Running' | 'Swimming';
+  secondaryActivity?: 'Brazilian Jiu-Jitsu' | 'Cycling' | 'Hiking' | 'Kickboxing' | 'Other' | 'Resistance' | 'Running' | 'Swimming';
   duration: number; // in minutes
   secondaryDuration?: number; // in minutes for secondary activity
   exerciseType?: 'Push' | 'Pull' | 'Legs'; // Only for Resistance training
