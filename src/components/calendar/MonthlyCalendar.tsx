@@ -108,8 +108,8 @@ export function MonthlyCalendar({
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="bg-white/90 rounded-lg border-2 border-lime-300 overflow-hidden">
+      <div className="flex-1 overflow-y-auto touch-pan-y">
+        <div className="bg-white/90 rounded-lg border-2 border-lime-300 overflow-hidden touch-pan-y">
           {/* Week Days Header */}
           <div className="grid grid-cols-7 bg-lime-100 border-b border-lime-300">
             {weekDays.map((day) => (
@@ -134,7 +134,7 @@ export function MonthlyCalendar({
                 <div
                   key={index}
                   className={cn(
-                    "min-h-[80px] p-1 border-r border-b border-lime-200 last:border-r-0 relative cursor-pointer transition-colors group",
+                    "min-h-[80px] p-1 border-r border-b border-lime-200 last:border-r-0 relative cursor-pointer transition-colors group touch-pan-y",
                     !isCurrentMonth && "bg-gray-50 text-gray-400",
                     isCurrentDay && "bg-lime-100",
                     isSelected && "bg-lime-200",
