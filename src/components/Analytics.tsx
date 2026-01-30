@@ -1,7 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { WorkoutEntry } from "@/pages/Index";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { format, startOfYear, endOfYear, isWithinInterval } from "date-fns";
 
 interface AnalyticsProps {
   workouts: WorkoutEntry[];
@@ -19,6 +22,12 @@ const activityColors = {
 };
 
 export function Analytics({ workouts }: AnalyticsProps) {
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  const navigateYear = (direction: 'prev' | 'next') => {
+    setCurrentYear(prev => direction === 'prev' ? prev - 1 : prev + 1);
+  };
+
   const formatDuration = (minutes: number) => {
     if (minutes === 0) return "0m";
     const hours = Math.floor(minutes / 60);
@@ -33,9 +42,19 @@ export function Analytics({ workouts }: AnalyticsProps) {
     }
   };
 
+  const filteredWorkouts = useMemo(() => {
+    const yearStart = startOfYear(new Date(currentYear, 0, 1));
+    const yearEnd = endOfYear(new Date(currentYear, 0, 1));
+    
+    return workouts.filter(workout => {
+      const workoutDate = new Date(workout.date);
+      return isWithinInterval(workoutDate, { start: yearStart, end: yearEnd });
+    });
+  }, [workouts, currentYear]);
+
   const analyticsData = useMemo(() => {
-    // Weekly activity distribution
-    const weeklyData = workouts.reduce((acc, workout) => {
+    // Activity distribution for the selected year
+    const yearlyData = filteredWorkouts.reduce((acc, workout) => {
       const activityName = workout.activity === 'Other' && workout.customActivityName 
         ? workout.customActivityName 
         : workout.activity;
@@ -46,51 +65,76 @@ export function Analytics({ workouts }: AnalyticsProps) {
         const secondaryName = workout.secondaryActivity === 'Other' && workout.customSecondaryActivityName
           ? workout.customSecondaryActivityName
           : workout.secondaryActivity;
-        acc[secondaryName] = (acc[secondaryName] || 0) + (workout.duration * 0.3); // Give secondary activity 30% of the time
+        acc[secondaryName] = (acc[secondaryName] || 0) + (workout.duration * 0.3);
       }
       
       return acc;
     }, {} as Record<string, number>);
 
-    const weeklyChartData = Object.entries(weeklyData).map(([activity, duration]) => ({
-      activity: activity.length > 12 ? activity.substring(0, 12) + "..." : activity, // Truncate long names
-      fullActivity: activity, // Keep full name for tooltip
+    const yearlyChartData = Object.entries(yearlyData).map(([activity, duration]) => ({
+      activity: activity.length > 12 ? activity.substring(0, 12) + "..." : activity,
+      fullActivity: activity,
       duration: Math.round(duration),
-      durationFormatted: formatDuration(Math.round(duration)), // Add formatted duration
-      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
+      durationFormatted: formatDuration(Math.round(duration)),
+      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280",
     }));
 
     // Pie chart data
-    const totalDuration = Object.values(weeklyData).reduce((sum, duration) => sum + duration, 0);
-    const pieData = Object.entries(weeklyData).map(([activity, duration]) => ({
+    const totalDuration = Object.values(yearlyData).reduce((sum, duration) => sum + duration, 0);
+    const pieData = Object.entries(yearlyData).map(([activity, duration]) => ({
       name: activity,
       value: Math.round(duration),
-      valueFormatted: formatDuration(Math.round(duration)), // Add formatted duration
-      percentage: ((duration / totalDuration) * 100).toFixed(1),
-      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280", // Default to gray for custom activities
+      valueFormatted: formatDuration(Math.round(duration)),
+      percentage: totalDuration > 0 ? ((duration / totalDuration) * 100).toFixed(1) : "0",
+      fill: activityColors[activity as keyof typeof activityColors] || "#6b7280",
     }));
 
     // Summary stats
-    const totalWorkouts = workouts.length;
-    const actualTotalDuration = workouts.reduce((sum, workout) => sum + workout.duration, 0);
+    const totalWorkouts = filteredWorkouts.length;
+    const actualTotalDuration = filteredWorkouts.reduce((sum, workout) => sum + workout.duration, 0);
     const averageDuration = totalWorkouts > 0 ? Math.round(actualTotalDuration / totalWorkouts) : 0;
-    const mostActiveActivity = Object.entries(weeklyData).reduce(
+    const mostActiveActivity = Object.entries(yearlyData).reduce(
       (max, [activity, duration]) => duration > max.duration ? { activity, duration: Math.round(duration) } : max,
       { activity: 'None', duration: 0 }
     );
 
     return {
-      weeklyChartData,
+      yearlyChartData,
       pieData,
       totalWorkouts,
       totalDuration: actualTotalDuration,
       averageDuration,
       mostActiveActivity,
     };
-  }, [workouts]);
+  }, [filteredWorkouts]);
 
   return (
     <div className="space-y-4 px-1">
+      {/* Year Navigation */}
+      <div className="flex items-center justify-between bg-white/90 rounded-lg p-3 border-2 border-lime-300">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigateYear('prev')}
+          className="h-8 w-8 p-0 hover:bg-lime-100"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        <div className="text-center">
+          <h2 className="text-lg font-bold text-gray-800">{currentYear}</h2>
+        </div>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigateYear('next')}
+          className="h-8 w-8 p-0 hover:bg-lime-100"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
         <Card className="p-3">
@@ -138,7 +182,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
           </CardHeader>
           <CardContent className="px-2">
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={analyticsData.weeklyChartData} margin={{ top: 10, right: 10, left: 0, bottom: 60 }}>
+              <BarChart data={analyticsData.yearlyChartData} margin={{ top: 10, right: 10, left: 0, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="activity" 
@@ -180,7 +224,6 @@ export function Analytics({ workouts }: AnalyticsProps) {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percentage, valueFormatted }) => {
-                    // Only show label if percentage is > 8% to avoid overcrowding on small screens
                     if (parseFloat(percentage) > 8) {
                       const shortName = name.length > 6 ? name.substring(0, 6) + "..." : name;
                       return `${shortName} ${percentage}%`;
