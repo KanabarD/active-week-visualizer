@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import { WorkoutEntry } from "@/pages/Index";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfYear, endOfYear, isWithinInterval } from "date-fns";
@@ -217,28 +217,25 @@ export function Analytics({ workouts }: AnalyticsProps) {
           </CardHeader>
           <CardContent className="px-2">
             <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={analyticsData.pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percentage, valueFormatted }) => {
-                    if (parseFloat(percentage) > 8) {
-                      const shortName = name.length > 6 ? name.substring(0, 6) + "..." : name;
-                      return `${shortName} ${percentage}%`;
-                    }
-                    return "";
-                  }}
-                  outerRadius={85}
-                  fontSize={9}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {analyticsData.pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
+              <BarChart 
+                data={analyticsData.pieData} 
+                layout="vertical"
+                margin={{ top: 10, right: 20, left: 80, bottom: 30 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  type="number"
+                  fontSize={10}
+                  tickFormatter={(value) => `${(value / 60).toFixed(1)}h`}
+                  label={{ value: 'Hours', position: 'bottom', offset: 10, fontSize: 11 }}
+                />
+                <YAxis 
+                  type="category"
+                  dataKey="name"
+                  fontSize={10}
+                  width={75}
+                  tickFormatter={(value) => value.length > 10 ? value.substring(0, 10) + "..." : value}
+                />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
@@ -246,12 +243,17 @@ export function Analytics({ workouts }: AnalyticsProps) {
                     borderRadius: '8px',
                     fontSize: '12px'
                   }}
-                  formatter={(value, name) => [
-                    `${formatDuration(Number(value))} (${analyticsData.pieData.find(d => d.name === name)?.percentage}%)`,
-                    name
+                  formatter={(value, name, props) => [
+                    `${formatDuration(Number(value))} (${props.payload?.percentage}%)`,
+                    props.payload?.name
                   ]}
                 />
-              </PieChart>
+                <Bar dataKey="value" fill="#8884d8">
+                  {analyticsData.pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
