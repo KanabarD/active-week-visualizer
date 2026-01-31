@@ -220,7 +220,7 @@ export function Analytics({ workouts, selectedYear, onYearChange }: AnalyticsPro
               <BarChart 
                 data={analyticsData.pieData} 
                 layout="vertical"
-                margin={{ top: 10, right: 20, left: 80, bottom: 30 }}
+                margin={{ top: 10, right: 30, left: 10, bottom: 30 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
