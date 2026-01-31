@@ -8,6 +8,8 @@ import { format, startOfYear, endOfYear, isWithinInterval } from "date-fns";
 
 interface AnalyticsProps {
   workouts: WorkoutEntry[];
+  selectedYear: number;
+  onYearChange: (year: number) => void;
 }
 
 const activityColors = {
@@ -21,11 +23,9 @@ const activityColors = {
   Other: "#6b7280",
 };
 
-export function Analytics({ workouts }: AnalyticsProps) {
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
+export function Analytics({ workouts, selectedYear, onYearChange }: AnalyticsProps) {
   const navigateYear = (direction: 'prev' | 'next') => {
-    setCurrentYear(prev => direction === 'prev' ? prev - 1 : prev + 1);
+    onYearChange(direction === 'prev' ? selectedYear - 1 : selectedYear + 1);
   };
 
   const formatDuration = (minutes: number) => {
@@ -43,14 +43,14 @@ export function Analytics({ workouts }: AnalyticsProps) {
   };
 
   const filteredWorkouts = useMemo(() => {
-    const yearStart = startOfYear(new Date(currentYear, 0, 1));
-    const yearEnd = endOfYear(new Date(currentYear, 0, 1));
+    const yearStart = startOfYear(new Date(selectedYear, 0, 1));
+    const yearEnd = endOfYear(new Date(selectedYear, 0, 1));
     
     return workouts.filter(workout => {
       const workoutDate = new Date(workout.date);
       return isWithinInterval(workoutDate, { start: yearStart, end: yearEnd });
     });
-  }, [workouts, currentYear]);
+  }, [workouts, selectedYear]);
 
   const analyticsData = useMemo(() => {
     // Activity distribution for the selected year
@@ -122,7 +122,7 @@ export function Analytics({ workouts }: AnalyticsProps) {
         </Button>
         
         <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-800">{currentYear}</h2>
+          <h2 className="text-lg font-bold text-gray-800">{selectedYear}</h2>
         </div>
         
         <Button

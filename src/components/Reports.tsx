@@ -9,9 +9,10 @@ import { DataManager } from "./DataManager";
 interface ReportsProps {
   workouts: WorkoutEntry[];
   onImportData: (workouts: WorkoutEntry[]) => void;
+  selectedYear: number;
 }
 
-export function Reports({ workouts, onImportData }: ReportsProps) {
+export function Reports({ workouts, onImportData, selectedYear }: ReportsProps) {
   const formatDuration = (minutes: number) => {
     if (minutes === 0) return "0m";
     const hours = Math.floor(minutes / 60);
@@ -27,25 +28,31 @@ export function Reports({ workouts, onImportData }: ReportsProps) {
   };
 
   const reports = useMemo(() => {
+    // Use selected year for filtering
+    const yearDate = new Date(selectedYear, 0, 1);
     const now = new Date();
+    const isCurrentYear = selectedYear === now.getFullYear();
+    
+    // For current year, use current date for weekly/monthly; for past years, use last week/month of year
+    const referenceDate = isCurrentYear ? now : new Date(selectedYear, 11, 31);
     
     // Weekly report
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    const weekStart = startOfWeek(referenceDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(referenceDate, { weekStartsOn: 1 });
     const weeklyWorkouts = workouts.filter(workout => 
       isWithinInterval(new Date(workout.date), { start: weekStart, end: weekEnd })
     );
 
     // Monthly report
-    const monthStart = startOfMonth(now);
-    const monthEnd = endOfMonth(now);
+    const monthStart = startOfMonth(referenceDate);
+    const monthEnd = endOfMonth(referenceDate);
     const monthlyWorkouts = workouts.filter(workout => 
       isWithinInterval(new Date(workout.date), { start: monthStart, end: monthEnd })
     );
 
     // Yearly report
-    const yearStart = startOfYear(now);
-    const yearEnd = endOfYear(now);
+    const yearStart = startOfYear(yearDate);
+    const yearEnd = endOfYear(yearDate);
     const yearlyWorkouts = workouts.filter(workout => 
       isWithinInterval(new Date(workout.date), { start: yearStart, end: yearEnd })
     );
@@ -86,7 +93,7 @@ export function Reports({ workouts, onImportData }: ReportsProps) {
         ...calculateStats(yearlyWorkouts),
       },
     };
-  }, [workouts]);
+  }, [workouts, selectedYear]);
 
   const ReportCard = ({ title, report }: { title: string; report: any }) => (
     <Card className="bg-white border border-gray-200 shadow-sm">
