@@ -23,6 +23,7 @@ const STORAGE_KEY = 'workout-tracker-data';
 const Index = () => {
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   // Load workouts from localStorage on app start
   useEffect(() => {
@@ -228,11 +229,11 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="analytics" className="flex-1 overflow-y-auto">
-            <Analytics workouts={workouts} />
+            <Analytics workouts={workouts} selectedYear={selectedYear} onYearChange={setSelectedYear} />
           </TabsContent>
 
           <TabsContent value="reports" className="flex-1 overflow-y-auto">
-            <Reports workouts={workouts} onImportData={handleImportData} />
+            <Reports workouts={workouts} onImportData={handleImportData} selectedYear={selectedYear} />
           </TabsContent>
         </Tabs>
       </main>
